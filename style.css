@@ -4,11 +4,14 @@ body {
 }
 
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px 40px;
-  background-color: #ababab;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4)
 }
 
 .logo {
@@ -20,6 +23,11 @@ body {
 .nav a {
   margin-left: 25px;
   text-decoration: none;
-  color: #7bfdff;
+  color: #000000;
   font-weight: 500;
+}
+
+.nav a:hover {
+  color: #aaaaaa;
+  transition: 0.3s;
 }
