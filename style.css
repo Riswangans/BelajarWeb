@@ -8,5 +8,18 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 14px 40px;
-  background-color: #111;
+  background-color: #ababab;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.nav a {
+  margin-left: 25px;
+  text-decoration: none;
+  color: #7bfdff;
+  font-weight: 500;
 }
