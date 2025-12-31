@@ -59,7 +59,7 @@
                 video.play();
                 pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
             } else {
-                video.pause();
+                video.paused();
                 pauseBtn.innerHTML = '<i class="fas fa-play"></i>';
             }
         });
