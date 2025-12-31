@@ -8,16 +8,501 @@
   <title>Belajar Web</title>
 </head>
 <body>
-  <header class="header">
-    <div class="logo">KingRox</div>
-    <nav class="nav">
-        <a href="#">hallo</a>
-        <a href="#">hei</a>
-        <a href="#">hai</a>
-    </nav>
-  </header>
-  <img src="https://files.catbox.moe/l9c15i.jpg" alt="ini gambar ke 1">
-  <h1>Welcome To My Website</h1>
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc tempus lectus tincidunt massa congue semper. Aenean lobortis nulla est, porta convallis odio porta et. Sed eu leo ullamcorper, efficitur dolor id, pharetra justo. Nullam euismod sagittis mauris sed bibendum.</p>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>HADZXYZ STORE</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#home">Home</a>
+                    <a href="#packages">Panel</a>
+                    <a href="#vps">VPS</a>
+                    <a href="#bot-rental">Sewa Bot</a>
+                    <a href="#bot-script">Script Bot</a>
+                    <a href="#features">Fitur</a>
+                    <a href="#payment">Pembayaran</a>
+                    <a href="#contact">Kontak</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section dengan Video Background -->
+    <section class="hero" id="home">
+        <!-- Video Background -->
+        <div class="video-background">
+            <!-- 
+                GANTI LINK VIDEO DI BAWAH INI DENGAN VIDEO ANDA
+                Format video: MP4, WebM, atau OGG
+                Untuk efek transparan, gunakan video dengan latar belakang gelap atau efek partikel
+            -->
+            <video id="bg-video" autoplay muted loop playsinline preload="auto">
+                <source src="https://files.catbox.moe/mkroh5.mp4" type="video/mp4">
+                <!-- Fallback video alternatif jika video utama tidak bisa dimuat -->
+                <source src="https://files.catbox.moe/mkroh5.mp4" type="video/mp4">
+                <!-- Fallback jika browser tidak support video -->
+                Your browser does not support the video tag.
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+        
+        <!-- Animated Particles -->
+        <div class="particles" id="particles"></div>
+        
+        <!-- Video Controls -->
+        <div class="video-controls">
+            <button class="video-btn" id="mute-btn">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <button class="video-btn" id="pause-btn">
+                <i class="fas fa-pause"></i>
+            </button>
+        </div>
+        
+        <!-- Hero Content -->
+        <div class="container">
+            <div class="hero-content">
+                <h1>Kebutuhan Hosting </h1>
+                <p>Nikmati pengalaman terbaik dengan panel hosting modern, VPS berkualitas tinggi, dan bot canggih. Server stabil 24/7 dengan performa maksimal dan harga terjangkau.</p>
+                <div class="hero-buttons">
+                    <a href="#packages" class="cta-button"><i class="fas fa-server"></i> Panel Hosting</a>
+                    <a href="#vps" class="cta-button"><i class="fas fa-cloud"></i> Virtual Private Server</a>
+                    <a href="#bot-script" class="cta-button secondary"><i class="fas fa-robot"></i> Script bot</a>
+                    <a href="#bot-rental" class="cta-button secondary"><i class="fas fa-robot"></i> Sewa Bot</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Packages Section -->
+    <section class="packages" id="packages">
+        <div class="container">
+            <div class="section-title">
+                <h2>Panel Pterodactyl</h2>
+                <p>Pilih paket panel hosting yang sesuai dengan kebutuhan Anda</p>
+            </div>
+            <div class="packages-grid">
+                <!-- Package 1GB -->
+                <div class="package-card fade-in">
+                    <div class="package-name">2GB</div>
+                    <div class="package-price">Rp 2,5K/bulan</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-memory"></i> 2GB RAM</li>
+                        <li><i class="fas fa-hdd"></i> 2GB Disk</li>
+                        <li><i class="fas fa-microchip"></i> 60% CPU</li>
+                        <li><i class="fas fa-shield-alt"></i> Garansi 10 Hari</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20ingin%20buy%20panel%202GB%20CPU60%" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- Package 2GB -->
+                <div class="package-card fade-in">
+                    <div class="package-name">3GB</div>
+                    <div class="package-price">Rp 3,5K/bulan</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-memory"></i> 3GB RAM</li>
+                        <li><i class="fas fa-hdd"></i> 3GB Disk</li>
+                        <li><i class="fas fa-microchip"></i> 90% CPU</li>
+                        <li><i class="fas fa-shield-alt"></i> Garansi 15 Hari</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20ingin%20buy%20panel%203GB%20CPU90%" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- Package 3GB -->
+                <div class="package-card fade-in">
+                    <div class="package-name">4GB</div>
+                    <div class="package-price">Rp 4,5K/bulan</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-memory"></i> 4GB RAM</li>
+                        <li><i class="fas fa-hdd"></i> 5GB Disk</li>
+                        <li><i class="fas fa-microchip"></i> 150% CPU</li>
+                        <li><i class="fas fa-shield-alt"></i> Garansi 20 Hari</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20ingin%20buy%20panel%204GB%20CPU120%" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- Package 4GB -->
+                <div class="package-card fade-in recommended">
+                    <div class="recommended-logo">
+                        <i class="fas fa-star"></i> Recommended
+                    </div>
+                    <div class="package-name">5GB</div>
+                    <div class="package-price">Rp 6K/bulan</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-memory"></i> 5GB RAM</li>
+                        <li><i class="fas fa-hdd"></i> 6GB Disk</li>
+                        <li><i class="fas fa-microchip"></i> 250% CPU</li>
+                        <li><i class="fas fa-shield-alt"></i> Garansi 25 Hari</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20ingin%20buy%20panel%205GB%20CPU160%" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- Package 5GB -->
+                <div class="package-card fade-in">
+                    <div class="package-name">6GB</div>
+                    <div class="package-price">Rp 7K/bulan</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-memory"></i> 6GB RAM</li>
+                        <li><i class="fas fa-hdd"></i> 7GB Disk</li>
+                        <li><i class="fas fa-microchip"></i> 300% CPU</li>
+                        <li><i class="fas fa-shield-alt"></i> Garansi 30 Hari</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20ingin%20buy%20panel%206GB%20CPU190%" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+                <!-- Package 6GB -->
+                <div class="package-card fade-in">
+                    <div class="package-name">7GB</div>
+                    <div class="package-price">Rp 8K/bulan</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-memory"></i> 7GB RAM</li>
+                        <li><i class="fas fa-hdd"></i> 8GB Disk</li>
+                        <li><i class="fas fa-microchip"></i> 350% CPU</li>
+                        <li><i class="fas fa-shield-alt"></i> Garansi 30 Hari</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20ingin%20buy%20panel%207GB%20CPU220%" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- Package 7GB -->
+                <div class="package-card fade-in">
+                    <div class="package-name">8GB</div>
+                    <div class="package-price">Rp 9K/bulan</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-memory"></i> 8GB RAM</li>
+                        <li><i class="fas fa-hdd"></i> 9GB Disk</li>
+                        <li><i class="fas fa-microchip"></i> 400% CPU</li>
+                        <li><i class="fas fa-shield-alt"></i> Garansi 30 Hari</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20ingin%20buy%20panel%208GB%20CPU260%" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- Package Premium -->
+                <div class="package-card premium fade-in">
+                    <div class="badge">TERBAIK</div>
+                    <div class="package-name">UNLIMITED</div>
+                    <div class="package-price">Rp 15K/bulan</div>
+                    <ul class="package-features">
+                        <li><i class="fas fa-memory"></i> RAM Unlimited</li>
+                        <li><i class="fas fa-hdd"></i>Disk Unlimited</li>
+                        <li><i class="fas fa-microchip"></i> CPU Unlimited</li>
+                        <li><i class="fas fa-shield-alt"></i> Garansi 30 Hari</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20ingin%20buy%20UNLIMITED%20PREMIUM" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VPS Section -->
+    <section class="vps" id="vps">
+        <div class="container">
+            <div class="section-title">
+                <h2 style="background: var(--gradient-vps); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    Virtual Private Server
+                </h2>
+                <p>VPS berkualitas tinggi dengan performa optimal untuk kebutuhan server Anda</p>
+            </div>
+            <div class="vps-grid">
+                <!-- VPS 1: RAM 4 CORE 2 -->
+                <div class="vps-card fade-in">
+                    <div class="vps-name">VPS Basic</div>
+                    <div class="vps-price">Rp 25K/bulan</div>
+                    <ul class="vps-features">
+                        <li><i class="fas fa-memory"></i> RAM 4 GB</li>
+                        <li><i class="fas fa-microchip"></i> 2 Core CPU</li>
+                        <li><i class="fas fa-hdd"></i> 30 GB SSD</li>
+                        <li><i class="fas fa-broadcast-tower"></i> 1 Gbps Network</li>
+                        <li><i class="fas fa-shield-alt"></i> Full Root Access</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20mau%20order%20VPS%20Basic%20(RAM%204%20Core%202)" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- VPS 2: RAM 8 CORE 4 -->
+                <div class="vps-card fade-in">
+                    <div class="badge">POPULER</div>
+                    <div class="vps-name">VPS Standard</div>
+                    <div class="vps-price">Rp 35K/bulan</div>
+                    <ul class="vps-features">
+                        <li><i class="fas fa-memory"></i> RAM 8 GB</li>
+                        <li><i class="fas fa-microchip"></i> 4 Core CPU</li>
+                        <li><i class="fas fa-hdd"></i> 50 GB SSD</li>
+                        <li><i class="fas fa-broadcast-tower"></i> 1 Gbps Network</li>
+                        <li><i class="fas fa-shield-alt"></i> Full Root Access</li>
+                    </ul>
+                   <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20mau%20order%20VPS%20sStandart%20(RAM%208%20Core%204)" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- VPS 3: RAM 16 CORE 4 -->
+                <div class="vps-card fade-in">
+                    <div class="vps-name">VPS Advanced</div>
+                    <div class="vps-price">Rp 50K/bulan</div>
+                    <ul class="vps-features">
+                        <li><i class="fas fa-memory"></i> RAM 16 GB</li>
+                        <li><i class="fas fa-microchip"></i> 4 Core CPU</li>
+                        <li><i class="fas fa-hdd"></i> 80 GB SSD</li>
+                        <li><i class="fas fa-broadcast-tower"></i> 1 Gbps Network</li>
+                        <li><i class="fas fa-shield-alt"></i> Full Root Access</li>
+                        <li><i class="fas fa-rocket"></i> Priority Support</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20mau%20order%20VPS%20Advanced%20(RAM%2016%20Core%204)" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- VPS 4: RAM 16 CORE 8 -->
+                <div class="vps-card fade-in">
+                    <div class="badge">TERBAIK</div>
+                    <div class="vps-name">VPS Premium</div>
+                    <div class="vps-price">Rp 60K/bulan</div>
+                    <ul class="vps-features">
+                        <li><i class="fas fa-memory"></i> RAM 16 GB</li>
+                        <li><i class="fas fa-microchip"></i> 8 Core CPU</li>
+                        <li><i class="fas fa-hdd"></i> 100 GB SSD</li>
+                        <li><i class="fas fa-broadcast-tower"></i> 1 Gbps Network</li>
+                        <li><i class="fas fa-shield-alt"></i> Full Root Access</li>
+                        <li><i class="fas fa-rocket"></i> Priority Support</li>
+                        <li><i class="fas fa-infinity"></i> Backup Harian</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20mau%20order%20VPS%20Premium%20(RAM%2016%20Core%208)" class="cta-button"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bot sewa Section -->
+    <section class="bot-rental" id="bot-rental">
+        <div class="container">
+            <div class="section-title">
+                <h2>Sewa Bot</h2>
+                <p>Nikmati berbagai fitur premium dengan bot berkualitas</p>
+            </div>
+            <div class="bot-grid">
+                <!-- Bot 15 Hari -->
+                <div class="bot-card fade-in">
+                    <div class="bot-name">15 Hari</div>
+                    <div class="bot-price">Rp 5.000</div>
+                    <ul class="bot-features">
+                        <li><i class="fas fa-robot"></i> Bisa Invite Bot ke Grup</li>
+                        <li><i class="fas fa-crown"></i> Akses Premium Fitur</li>
+                        <li><i class="fas fa-clock"></i> Online 24 Jam</li>
+                        <li><i class="fas fa-bolt"></i> Anti Delay / Error</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20mau%20sewa%20bot%2015%20hari" class="cta-button secondary"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- Bot 1 Bulan -->
+                <div class="bot-card fade-in recommended">
+                    <div class="badge secondary">REKOMENDASI</div>
+                    <div class="bot-name">1 Bulan</div>
+                    <div class="bot-price">Rp 15.000</div>
+                    <ul class="bot-features">
+                        <li><i class="fas fa-robot"></i> Bisa Invite Bot ke Grup</li>
+                        <li><i class="fas fa-crown"></i> Akses Premium Fitur</li>
+                        <li><i class="fas fa-clock"></i> Online 24 Jam</li>
+                        <li><i class="fas fa-bolt"></i> Anti Delay / Error</li>
+                        <li><i class="fas fa-plus"></i> Fitur terus bertambah</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%saya%20mau%20sewa%20bot%201%20bulan" class="cta-button secondary"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- Bot 2 Bulan -->
+                <div class="bot-card fade-in">
+                    <div class="bot-name">2 Bulan</div>
+                    <div class="bot-price">Rp 30.000</div>
+                    <ul class="bot-features">
+                        <li><i class="fas fa-robot"></i> Bisa Invite Bot ke Grup</li>
+                        <li><i class="fas fa-crown"></i> Akses Premium Fitur</li>
+                        <li><i class="fas fa-clock"></i> Online 24 Jam</li>
+                        <li><i class="fas fa-bolt"></i> Anti Delay / Error</li>
+                        <li><i class="fas fa-plus"></i> Fitur terus bertambah</li>
+                        <li><i class="fas fa-shield-alt"></i> Fitur jaga grup lengkap</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20mau%20sewa%20bot%202%20bulan" class="cta-button secondary"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+
+                <!-- Bot Permanen -->
+                <div class="bot-card fade-in">
+                    <div class="badge secondary">TERBAIK</div>
+                    <div class="bot-name">1 tahun</div>
+                    <div class="bot-price">Rp 120.000</div>
+                    <ul class="bot-features">
+                        <li><i class="fas fa-robot"></i> Bisa Invite Bot ke Grup</li>
+                        <li><i class="fas fa-crown"></i> Akses Premium Fitur</li>
+                        <li><i class="fas fa-clock"></i> Online 24 Jam</li>
+                        <li><i class="fas fa-bolt"></i> Anti Delay / Error</li>
+                        <li><i class="fas fa-plus"></i> Fitur terus bertambah</li>
+                        <li><i class="fas fa-shield-alt"></i> Fitur jaga grup lengkap</li>
+                        <li><i class="fas fa-infinity"></i> Akses seumur hidup</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20mau%20sewa%20bot%20permanen" class="cta-button secondary"><i class="fab fa-telegram"></i> ORDER NOW</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <section class="bot-script" id="bot-script">
+        <div class="container">
+            <div class="section-title">
+                <h2>Script Bot</h2>
+                <p>Nikmati berbagai script dengn fitur langka dan anti pasaran</p>
+            </div>
+             <div class="bot-grid">
+                 <!-- List script bot -->
+                 <div class="bot-card fade-in">
+                    <div class="bot-name">Script bot md</div>
+                    <div class="bot-price">Rp 25.000</div>
+                    <ul class="bot-features">
+                        <li><i class="fas fa-robot"></i> Feture 1000+</li>
+                        <li><i class="fas fa-crown"></i> No enc 100%</li>
+                        <li><i class="fas fa-clock"></i> All feature works</li>
+                        <li><i class="fas fa-bolt"></i> Free updte</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20Ingin%20Order%20Script%20bot%20md" class="cta-button secondary"><i class="fab fa-telegram"></i> Pesan Sekarang</a>
+                </div>
+
+                  <div class="bot-card fade-in">
+                    <div class="bot-name">Script bot bug</div>
+                    <div class="bot-price">Rp 25.000</div>
+                    <ul class="bot-features">
+                        <li><i class="fas fa-robot"></i> Feture 250+</li>
+                        <li><i class="fas fa-crown"></i> No enc 100%</li>
+                        <li><i class="fas fa-clock"></i> All feature works</li>
+                        <li><i class="fas fa-bolt"></i> Free updte</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20Ingin%20Order%20Script%20bot%20bug" class="cta-button secondary"><i class="fab fa-telegram"></i> Pesan Sekarang</a>
+                </div>
+
+                 <div class="bot-card fade-in">
+                    <div class="bot-name">Script bot cpnel</div>
+                    <div class="bot-price">Rp 15.000</div>
+                    <ul class="bot-features">
+                        <li><i class="fas fa-robot"></i> Feture 100+</li>
+                        <li><i class="fas fa-crown"></i> No enc 100%</li>
+                        <li><i class="fas fa-clock"></i> Crate panel otomatis</li>
+                        <li><i class="fas fa-bolt"></i> Free updte</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20Ingin%20Order%20Script%20bot%20cpanel" class="cta-button secondary"><i class="fab fa-telegram"></i> Pesan Sekarang</a>
+                </div>
+
+                  <div class="bot-card fade-in">
+                    <div class="badge secondary">TERBAIK</div>
+                    <div class="bot-name">Script bot bug tele</div>
+                    <div class="bot-price">Rp 30.000</div>
+                    <ul class="bot-features">
+                        <li><i class="fas fa-robot"></i> Feture 100+</li>
+                        <li><i class="fas fa-crown"></i> No enc 100%</li>
+                        <li><i class="fas fa-clock"></i> All feature works</li>
+                        <li><i class="fas fa-bolt"></i> Free updte</li>
+                    </ul>
+                    <a href="https://t.me/mianomohaal?text=Halo,%20kak%20saya%20Ingin%20Order%20Script%20bot%20bug%20tele" class="cta-button secondary"><i class="fab fa-telegram"></i> Pesan Sekarang</a>
+                </div>
+             </div>
+        </div>
+     </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Kelebihan Layanan</h2>
+                <p>Mengapa memilih Hadzxyz Store?</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Server Stabil 24/7</h3>
+                    <p>Uptime 99.9% dengan performa tinggi dan kecepatan optimal</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>VPS Legal</h3>
+                    <p>Menggunakan infrastruktur VPS legal dan terpercaya</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <h3>Garansi 30 Hari</h3>
+                    <p>Garansi penuh 30 hari untuk kenyamanan Anda</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3>Bisa Diperpanjang</h3>
+                    <p>Fleksibel dalam memperpanjang layanan kapan saja</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Bot Berkualitas</h3>
+                    <p>Bot dengan fitur lengkap dan performa optimal</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Support 24/7</h3>
+                    <p>Tim support siap membantu kapan saja</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Section -->
+    <section class="payment" id="payment">
+        <div class="container">
+            <div class="section-title">
+                <h2>Metode Pembayaran</h2>
+                <p>Berbagai metode pembayaran yang tersedia</p>
+            </div>
+            <div class="payment-methods">
+                <div class="payment-method fade-in">
+                    <div class="payment-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <span>Costumer Service</span>
+                    <small>62 838-7699-9143</small>
+                </div>
+                <div class="payment-method fade-in">
+                    <div class="payment-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <span>QRIS</span>
+                    <small>Semua E-Wallet</small>
+                </div>
+                <div class="payment-method fade-in">
+                    <div class="payment-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <span>E-Wallet</span>
+                    <small>Dana, OVO, GoPay</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="logo" style="justify-content: center; margin-bottom: 1.5rem;">
+                <i class="fas fa-bolt"></i>
+                <span>HADZXYZ STORE</span>
+            </div>
+            <div class="social-links">
+                <a href="https://wa.me/6283876999143" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://t.me/mianomohaal" target="_blank"><i class="fab fa-telegram"></i></a>
+                <a href="https://instagram.com/@15.clay.xo_" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://youtube.com/@alwayshadzxyz" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p class="copyright">© 2024 Hadzxyz Store. All rights reserved.</p>
+            <p class="copyright" style="margin-top: 0.5rem; font-size: 0.8rem;">Panel Hosting • Virtual Private Server • Sewa Bot • Script bot</p>
+        </div>
+    </footer>
 </body>
 </html>
