@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScriptStore - Marketplace Script Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset & Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00b894;
+            --primary-dark: #00a085;
+            --primary-light: #00ffcc;
+            --secondary: #0984e3;
+            --secondary-dark: #0770c4;
+            --accent: #fd79a8;
+            --dark: #0f1419;
+            --darker: #0a0e13;
+            --light: #f8f9fa;
+            --gray: #a0aec0;
+            --card-bg: rgba(25, 30, 40, 0.9);
+            --card-border: rgba(0, 184, 148, 0.3);
+            --gradient-main: linear-gradient(135deg, #00b894, #0984e3);
+            --gradient-dark: linear-gradient(135deg, #00a085, #0770c4);
+            --shadow-primary: 0 10px 30px rgba(0, 184, 148, 0.2);
+            --shadow-secondary: 0 10px 30px rgba(9, 132, 227, 0.2);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', sans-serif;
+            background-color: var(--darker);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 184, 148, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(9, 132, 227, 0.1) 0%, transparent 30%);
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(15, 20, 30, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 184, 148, 0.2);
+            padding: 20px 0;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 150px 0 100px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        /* Products */
+        .products {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-primary);
+            border-color: var(--primary);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--gradient-main);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .product-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(9, 132, 227, 0.1));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .product-icon i {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .product-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--light);
+        }
+
+        .product-description {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .product-price-old {
+            font-size: 1.1rem;
+            text-decoration: line-through;
+            color: var(--gray);
+            margin-left: 10px;
+        }
+
+        /* Tombol Beli */
+        .buy-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--gradient-main);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .buy-btn:hover {
+            background: var(--gradient-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
+        }
+
+        /* Modal Popup */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--card-border);
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--accent);
+        }
+
+        .modal-product-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--light);
+        }
+
+        .modal-product-description {
+            color: var(--gray);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .modal-price {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        /* Form Pembelian */
+        .purchase-form {
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--gradient-main);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--gradient-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--gradient-main);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 3000;
+            animation: slideInRight 0.3s ease;
+            display: none;
+        }
+
+        .notification.active {
+            display: block;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(15, 20, 30, 0.95);
+            border-top: 1px solid rgba(0, 184, 148, 0.2);
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--light);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="#" class="logo">
+                    <i class="fas fa-code logo-icon"></i>
+                    ScriptStore
+                </a>
+                <div class="nav-links">
+                    <a href="#home">Home</a>
+                    <a href="#products">Scripts</a>
+                    <a href="#about">Tentang</a>
+                    <a href="#contact">Kontak</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Marketplace Script Digital Premium</h1>
+            <p>Koleksi script berkualitas tinggi untuk website, aplikasi, dan automasi. Download instan setelah pembayaran.</p>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products" id="products">
+        <div class="container">
+            <div class="section-title">
+                <h2>Script Digital Terbaru</h2>
+                <p>Pilih script yang sesuai dengan kebutuhan Anda</p>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="products-grid" id="products-grid">
+                <!-- Scripts akan di-load secara dinamis -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Purchase Modal -->
+    <div class="modal" id="purchaseModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <h3 class="modal-product-title" id="modalProductTitle"></h3>
+            <p class="modal-product-description" id="modalProductDescription"></p>
+            
+            <div class="modal-price" id="modalProductPrice"></div>
+            
+            <!-- Form Pembelian -->
+            <form class="purchase-form" id="purchaseForm">
+                <div class="form-group">
+                    <label for="buyerEmail">
+                        <i class="fas fa-envelope"></i> Email Anda
+                    </label>
+                    <input type="email" id="buyerEmail" required placeholder="nama@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="buyerName">
+                        <i class="fas fa-user"></i> Nama Lengkap
+                    </label>
+                    <input type="text" id="buyerName" required placeholder="Nama lengkap">
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethod">
+                        <i class="fas fa-credit-card"></i> Metode Pembayaran
+                    </label>
+                    <select id="paymentMethod" style="width: 100%; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white;">
+                        <option value="qris">QRIS (Semua E-Wallet)</option>
+                        <option value="bank">Transfer Bank</option>
+                        <option value="dana">DANA</option>
+                        <option value="ovo">OVO</option>
+                        <option value="gopay">GoPay</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-shopping-cart"></i> Lanjutkan Pembayaran
+                </button>
+                
+                <p style="text-align: center; margin-top: 15px; color: var(--gray); font-size: 0.9rem;">
+                    Script akan dikirim ke email Anda setelah pembayaran dikonfirmasi
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Footer -->
+    <footer class="footer" id="about">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ScriptStore</h3>
+                    <p style="color: var(--gray); line-height: 1.6;">
+                        Platform terpercaya untuk script digital berkualitas. Garansi 100% uang kembali jika tidak sesuai.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Kategori</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Script Website</a></li>
+                        <li><a href="#">Bot WhatsApp</a></li>
+                        <li><a href="#">Tools Automasi</a></li>
+                        <li><a href="#">API Services</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Kontak</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-envelope"></i> support@scriptstore.id</a></li>
+                        <li><a href="#"><i class="fab fa-whatsapp"></i> +62 812-3456-7890</a></li>
+                        <li><a href="#"><i class="fas fa-clock"></i> Support 24/7</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2024 ScriptStore. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DATA SCRIPT - INI YANG BISA KAMU TAMBAH/EDIT
+        const scripts = [
+            {
+                id: 1,
+                name: "WhatsApp Bot Pro",
+                description: "Script bot WhatsApp dengan 100+ fitur untuk automasi chat, broadcast, dan manajemen grup.",
+                price: 299000,
+                oldPrice: 499000,
+                category: "bot",
+                badge: "TERLARIS",
+                icon: "fab fa-whatsapp"
+            },
+            {
+                id: 2,
+                name: "E-Commerce Script Full",
+                description: "Script lengkap website e-commerce dengan payment gateway, admin panel, dan mobile responsive.",
+                price: 449000,
+                oldPrice: 799000,
+                category: "website",
+                badge: "BARU",
+                icon: "fas fa-shopping-cart"
+            },
+            {
+                id: 3,
+                name: "Auto Responder Telegram",
+                description: "Bot Telegram dengan AI untuk auto reply, customer service, dan manajemen channel.",
+                price: 199000,
+                category: "bot",
+                badge: "",
+                icon: "fab fa-telegram"
+            },
+            {
+                id: 4,
+                name: "Social Media Scheduler",
+                description: "Tools untuk scheduling post ke Instagram, Facebook, Twitter secara otomatis.",
+                price: 349000,
+                oldPrice: 599000,
+                category: "tools",
+                badge: "DISKON",
+                icon: "fas fa-share-alt"
+            },
+            {
+                id: 5,
+                name: "Website CMS Premium",
+                description: "Content Management System dengan dashboard admin dan berbagai template premium.",
+                price: 399000,
+                category: "website",
+                badge: "",
+                icon: "fas fa-laptop-code"
+            },
+            {
+                id: 6,
+                name: "Scraper Data API",
+                description: "Tools untuk scraping data dari berbagai website dengan API yang mudah diintegrasikan.",
+                price: 249000,
+                oldPrice: 399000,
+                category: "tools",
+                badge: "TERBAIK",
+                icon: "fas fa-database"
+            }
+        ];
+
+        // DOM Elements
+        const productsGrid = document.getElementById('products-grid');
+        const purchaseModal = document.getElementById('purchaseModal');
+        const modalClose = document.getElementById('modalClose');
+        const modalProductTitle = document.getElementById('modalProductTitle');
+        const modalProductDescription = document.getElementById('modalProductDescription');
+        const modalProductPrice = document.getElementById('modalProductPrice');
+        const purchaseForm = document.getElementById('purchaseForm');
+        const notification = document.getElementById('notification');
+
+        // Current selected product
+        let currentProduct = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            setupEventListeners();
+        });
+
+        // CARA NAMBAH PRODUK BARU:
+        // 1. Tambahkan object baru di array "scripts" di atas
+        // 2. Format object script:
+        /*
+        {
+            id: 7, // ID unik (angka berikutnya)
+            name: "Nama Script",
+            description: "Deskripsi script yang lengkap",
+            price: 299000, // Harga dalam angka (tanpa titik)
+            oldPrice: 499000, // Harga lama (opsional)
+            category: "kategori", // website/bot/tools
+            badge: "LABEL", // Terlaris/Baru/Diskon/Terbaik (kosong jika tidak ada)
+            icon: "fas fa-nama-icon" // Icon dari FontAwesome
+        }
+        */
+
+        // Render semua produk
+        function renderProducts() {
+            productsGrid.innerHTML = '';
+            
+            scripts.forEach(script => {
+                const productCard = createProductCard(script);
+                productsGrid.appendChild(productCard);
+            });
+        }
+
+        // Buat card produk
+        function createProductCard(script) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            // Badge jika ada
+            const badgeHTML = script.badge 
+                ? `<div class="product-badge">${script.badge}</div>`
+                : '';
+            
+            // Harga lama jika ada
+            const oldPriceHTML = script.oldPrice 
+                ? `<span class="product-price-old">Rp ${formatPrice(script.oldPrice)}</span>`
+                : '';
+            
+            card.innerHTML = `
+                ${badgeHTML}
+                <div class="product-icon">
+                    <i class="${script.icon}"></i>
+                </div>
+                <h3 class="product-title">${script.name}</h3>
+                <p class="product-description">${script.description}</p>
+                <div class="product-price">
+                    Rp ${formatPrice(script.price)}
+                    ${oldPriceHTML}
+                </div>
+                <button class="buy-btn" data-id="${script.id}">
+                    <i class="fas fa-shopping-cart"></i> Beli Sekarang
+                </button>
+            `;
+            
+            return card;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tombol beli pada setiap product card
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('buy-btn') || e.target.closest('.buy-btn')) {
+                    const button = e.target.classList.contains('buy-btn') ? e.target : e.target.closest('.buy-btn');
+                    const scriptId = parseInt(button.getAttribute('data-id'));
+                    openPurchaseModal(scriptId);
+                }
+            });
+            
+            // Close modal
+            modalClose.addEventListener('click', closePurchaseModal);
+            
+            // Close modal ketika klik di luar
+            purchaseModal.addEventListener('click', (e) => {
+                if (e.target === purchaseModal) {
+                    closePurchaseModal();
+                }
+            });
+            
+            // Submit form pembelian
+            purchaseForm.addEventListener('submit', handlePurchaseSubmit);
+        }
+
+        // Buka modal pembelian
+        function openPurchaseModal(scriptId) {
+            currentProduct = scripts.find(script => script.id === scriptId);
+            
+            if (!currentProduct) return;
+            
+            // Isi data produk di modal
+            modalProductTitle.textContent = currentProduct.name;
+            modalProductDescription.textContent = currentProduct.description;
+            
+            // Format harga
+            let priceHTML = `Rp ${formatPrice(currentProduct.price)}`;
+            if (currentProduct.oldPrice) {
+                priceHTML += ` <span style="font-size: 1.2rem; text-decoration: line-through; color: var(--gray); margin-left: 10px;">Rp ${formatPrice(currentProduct.oldPrice)}</span>`;
+            }
+            modalProductPrice.innerHTML = priceHTML;
+            
+            // Reset form
+            purchaseForm.reset();
+            
+            // Tampilkan modal
+            purchaseModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Tutup modal
+        function closePurchaseModal() {
+            purchaseModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            currentProduct = null;
+        }
+
+        // Handle submit form pembelian
+        function handlePurchaseSubmit(e) {
+            e.preventDefault();
+            
+            if (!currentProduct) return;
+            
+            // Ambil data dari form
+            const email = document.getElementById('buyerEmail').value;
+            const name = document.getElementById('buyerName').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            
+            // Validasi email
+            if (!validateEmail(email)) {
+                showNotification('Email tidak valid!', 'error');
+                return;
+            }
+            
+            // Simulasi proses pembelian
+            // DI SINI KAMU BISA KIRIM DATA KE SERVER/BACKEND
+            
+            // Tampilkan notifikasi sukses
+            showNotification(`Pembelian ${currentProduct.name} berhasil! Instruksi pembayaran dikirim ke ${email}`);
+            
+            // Reset form dan tutup modal
+            purchaseForm.reset();
+            closePurchaseModal();
+            
+            // Log data pembelian (ini bisa diganti dengan AJAX request)
+            console.log('Data Pembelian:', {
+                product: currentProduct.name,
+                price: currentProduct.price,
+                buyer: {
+                    email: email,
+                    name: name
+                },
+                paymentMethod: paymentMethod,
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        // Validasi email
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        // Format harga (contoh: 299000 -> "299.000")
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // Tampilkan notifikasi
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = 'notification active';
+            
+            if (type === 'error') {
+                notification.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+            } else {
+                notification.style.background = 'var(--gradient-main)';
+            }
+            
+            // Auto hide setelah 5 detik
+            setTimeout(() => {
+                notification.classList.remove('active');
+            }, 5000);
+        }
+
+        // Smooth scroll untuk navigasi
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
+                
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
