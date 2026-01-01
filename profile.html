@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - DigitalShop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #4895ef;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --dark: #0a0e17;
+            --darker: #050813;
+            --light: #f8f9fa;
+            --gray: #adb5bd;
+            --gray-dark: #6c757d;
+            --card-bg: rgba(30, 33, 58, 0.85);
+            --card-border: rgba(67, 97, 238, 0.25);
+            --gradient-main: linear-gradient(135deg, #4361ee, #7209b7);
+            --gradient-accent: linear-gradient(135deg, #f72585, #b5179e);
+            --shadow-primary: 0 10px 25px rgba(67, 97, 238, 0.2);
+            --shadow-dark: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--darker);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(67, 97, 238, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(114, 9, 183, 0.1) 0%, transparent 30%);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(10, 14, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(67, 97, 238, 0.2);
+            box-shadow: var(--shadow-dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-main);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 0;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-light);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-logout {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(247, 37, 133, 0.3);
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout:hover {
+            background: rgba(247, 37, 133, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 25px;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 50px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-avatar {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            background: var(--gradient-main);
+        }
+
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            border: 4px solid var(--primary);
+        }
+
+        .avatar-upload {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 2px solid white;
+        }
+
+        .avatar-upload:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--light), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .profile-email {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Profile Content */
+        .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-card h2 i {
+            font-size: 1.5rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--light);
+            font-size: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--gray);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            background: var(--gradient-main);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: var(--gradient-accent);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .password-toggle:hover {
+            color: var(--light);
+        }
+
+        /* Testimonials List */
+        .testimonials-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .testimonials-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .testimonials-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .testimonials-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .testimonial-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .testimonial-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .testimonial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .testimonial-product {
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--primary-light);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .testimonial-rating {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .testimonial-rating i {
+            color: var(--warning);
+            font-size: 0.9rem;
+        }
+
+        .testimonial-text {
+            color: var(--light);
+            line-height: 1.6;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .testimonial-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 6px 15px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        .btn-edit {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+            border: 1px solid rgba(76, 201, 240, 0.3);
+        }
+
+        .btn-delete {
+            background: rgba(247, 37, 133, 0.2);
+            color: #f72585;
+            border: 1px solid rgba(247, 37, 133, 0.3);
+        }
+
+        .btn-edit:hover, .btn-delete:hover {
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: rgba(76, 201, 240, 0.1);
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            color: #4cc9f0;
+        }
+
+        .alert-danger {
+            background: rgba(247, 37, 133, 0.1);
+            border: 1px solid rgba(247, 37, 133, 0.3);
+            color: #f72585;
+        }
+
+        .alert i {
+            font-size: 1.2rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(15px);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.8rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--accent);
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .rating-input i {
+            font-size: 2rem;
+            color: var(--gray);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .rating-input i:hover,
+        .rating-input i.active {
+            color: var(--warning);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .profile-name {
+                font-size: 2rem;
+            }
+            
+            .profile-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .nav-menu {
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .profile-card {
+                padding: 20px;
+            }
+            
+            .modal-content {
+                padding: 25px;
+            }
+            
+            .nav-container {
+                padding: 0 15px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <div class="brand-logo">
+                    <i class="fas fa-store"></i>
+                </div>
+                <span class="brand-text">DigitalShop</span>
+            </a>
+
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="index.html#products" class="nav-link">Produk</a></li>
+                    <li><a href="index.html#testimonials" class="nav-link">Testimoni</a></li>
+                    <li><a href="index.html#contact" class="nav-link">Kontak</a></li>
+                    <li class="user-menu">
+                        <a href="profile.html" class="nav-link">
+                            <i class="fas fa-user-circle"></i> Profile
+                        </a>
+                        <button class="btn-logout" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Alert Messages -->
+        <div class="alert alert-success" id="successAlert">
+            <i class="fas fa-check-circle"></i>
+            <span id="successMessage"></span>
+        </div>
+
+        <div class="alert alert-danger" id="errorAlert">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorMessage"></span>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header fade-in">
+            <div class="profile-avatar">
+                <div class="avatar-placeholder" id="avatarPlaceholder">JD</div>
+                <img src="#" alt="Profile" class="avatar-image" id="avatarImage" style="display: none;">
+                <label for="avatarInput" class="avatar-upload">
+                    <i class="fas fa-camera"></i>
+                    <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                </label>
+            </div>
+
+            <div class="profile-info">
+                <h1 class="profile-name" id="displayName">Jordan Developer</h1>
+                <p class="profile-email" id="userEmail">jordan@example.com</p>
+                
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="purchaseCount">0</span>
+                        <span class="stat-label">Total Pembelian</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalSpent">0</span>
+                        <span class="stat-label">Total Pengeluaran</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="testimonialCount">0</span>
+                        <span class="stat-label">Testimoni Ditulis</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <!-- Edit Profile Form -->
+            <div class="profile-card fade-in">
+                <h2><i class="fas fa-user-edit"></i> Edit Profil</h2>
+                <form id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="firstName">Nama Depan</label>
+                            <input type="text" id="firstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="lastName">Nama Belakang</label>
+                            <input type="text" id="lastName" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" id="email" class="form-control" required>
+                        <small style="color: var(--gray); font-size: 0.85rem; margin-top: 5px; display: block;">
+                            Email akan diverifikasi ulang setelah diubah
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn">
+                            <i class="fas fa-save"></i> Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+
+                <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h2><i class="fas fa-lock"></i> Ubah Password</h2>
+                    <form id="passwordForm">
+                        <div class="form-group">
+                            <label class="form-label" for="currentPassword">Password Saat Ini</label>
+                            <div class="input-group">
+                                <input type="password" id="currentPassword" class="form-control" required>
+                                <button type="button" class="password-toggle" data-target="currentPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="newPassword">Password Baru</label>
+                                <div class="input-group">
+                                    <input type="password" id="newPassword" class="form-control" required>
+                                    <button type="button" class="password-toggle" data-target="newPassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="confirmPassword">Konfirmasi Password</label>
+                                <div class="input-group">
+                                    <input type="password" id="confirmPassword" class="form-control" required>
+                                    <button type="button" class="password-toggle" data-target="confirmPassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-secondary">
+                                <i class="fas fa-key"></i> Ubah Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- User Testimonials -->
+            <div class="profile-card fade-in">
+                <h2><i class="fas fa-comment-alt"></i> Testimoni Saya</h2>
+                <div class="testimonials-list" id="testimonialsList">
+                    <!-- Testimonials will be loaded here -->
+                    <div class="empty-state">
+                        <i class="fas fa-comment-slash"></i>
+                        <p>Anda belum menulis testimoni</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem;">
+                            Beli produk dan tulis testimoni untuk membantu pengguna lain
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Testimonial Modal -->
+    <div class="modal" id="editTestimonialModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Testimoni</h3>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editTestimonialForm">
+                <input type="hidden" id="editTestimonialId">
+                
+                <div class="form-group">
+                    <label class="form-label">Rating</label>
+                    <div class="rating-input" id="ratingStars">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
+                    <input type="hidden" id="ratingValue" value="5">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="testimonialText">Testimoni</label>
+                    <textarea id="testimonialText" class="form-control" rows="5" placeholder="Tulis testimoni Anda..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn">
+                        <i class="fas fa-save"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <script>
+        // Initialize Firebase
+        let auth, db, storage;
+        try {
+            if (typeof firebaseConfig !== 'undefined') {
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                storage = firebase.storage();
+                console.log("Firebase initialized successfully");
+            } else {
+                throw new Error("Firebase config not found");
+            }
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            showError("Firebase tidak dapat diinisialisasi. Silakan cek konfigurasi.");
+        }
+
+        // DOM Elements
+        const logoutBtn = document.getElementById('logoutBtn');
+        const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+        const avatarImage = document.getElementById('avatarImage');
+        const avatarInput = document.getElementById('avatarInput');
+        const displayName = document.getElementById('displayName');
+        const userEmail = document.getElementById('userEmail');
+        const purchaseCount = document.getElementById('purchaseCount');
+        const totalSpent = document.getElementById('totalSpent');
+        const testimonialCount = document.getElementById('testimonialCount');
+        const profileForm = document.getElementById('profileForm');
+        const passwordForm = document.getElementById('passwordForm');
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
+        const emailInput = document.getElementById('email');
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const testimonialsList = document.getElementById('testimonialsList');
+        const editTestimonialModal = document.getElementById('editTestimonialModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const editTestimonialForm = document.getElementById('editTestimonialForm');
+        const testimonialText = document.getElementById('testimonialText');
+        const ratingStars = document.getElementById('ratingStars');
+        const ratingValue = document.getElementById('ratingValue');
+        const editTestimonialId = document.getElementById('editTestimonialId');
+
+        // Current user data
+        let currentUser = null;
+        let userStats = {
+            purchaseCount: 0,
+            totalSpent: 0,
+            testimonialCount: 0
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            setupEventListeners();
+        });
+
+        // Check authentication
+        function checkAuth() {
+            if (!auth) return;
+            
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    loadUserData(user);
+                    loadUserStats(user.uid);
+                    loadUserTestimonials(user.uid);
+                } else {
+                    // Redirect to login if not authenticated
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Logout
+            logoutBtn.addEventListener('click', () => {
+                logout();
+            });
+
+            // Profile form submission
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateProfile();
+            });
+
+            // Password form submission
+            passwordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updatePassword();
+            });
+
+            // Avatar upload
+            avatarInput.addEventListener('change', async (e) => {
+                if (e.target.files[0]) {
+                    await uploadAvatar(e.target.files[0]);
+                }
+            });
+
+            // Password toggle
+            document.querySelectorAll('.password-toggle').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    const icon = this.querySelector('i');
+                    icon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+                });
+            });
+
+            // Modal close
+            closeModalBtn.addEventListener('click', () => {
+                editTestimonialModal.style.display = 'none';
+            });
+
+            // Edit testimonial form
+            editTestimonialForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateTestimonial();
+            });
+
+            // Rating stars
+            ratingStars.querySelectorAll('i').forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    setRating(rating);
+                });
+            });
+
+            // Close modal on outside click
+            window.addEventListener('click', (e) => {
+                if (e.target === editTestimonialModal) {
+                    editTestimonialModal.style.display = 'none';
+                }
+            });
+        }
+
+        // Load user data
+        function loadUserData(user) {
+            // Set display name
+            const name = user.displayName || 'User';
+            displayName.textContent = name;
+            
+            // Set initials for avatar
+            const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            avatarPlaceholder.textContent = initials;
+            
+            // Set email
+            userEmail.textContent = user.email;
+            
+            // Fill form fields
+            const nameParts = name.split(' ');
+            firstNameInput.value = nameParts[0] || '';
+            lastNameInput.value = nameParts.slice(1).join(' ') || '';
+            emailInput.value = user.email || '';
+            
+            // Load avatar if exists
+            if (user.photoURL) {
+                avatarImage.src = user.photoURL;
+                avatarImage.style.display = 'block';
+                avatarPlaceholder.style.display = 'none';
+            }
+        }
+
+        // Load user statistics
+        async function loadUserStats(userId) {
+            if (!db) return;
+            
+            try {
+                // Get purchase history
+                const purchasesRef = db.collection('purchases').where('userId', '==', userId);
+                const purchasesSnapshot = await purchasesRef.get();
+                
+                userStats.purchaseCount = purchasesSnapshot.size;
+                userStats.totalSpent = 0;
+                
+                purchasesSnapshot.forEach(doc => {
+                    const purchase = doc.data();
+                    userStats.totalSpent += purchase.amount || 0;
+                });
+                
+                // Get testimonials count
+                const testimonialsRef = db.collection('testimonials').where('userId', '==', userId);
+                const testimonialsSnapshot = await testimonialsRef.get();
+                
+                userStats.testimonialCount = testimonialsSnapshot.size;
+                
+                // Update UI
+                updateStatsUI();
+                
+            } catch (error) {
+                console.error('Error loading user stats:', error);
+            }
+        }
+
+        // Update statistics UI
+        function updateStatsUI() {
+            purchaseCount.textContent = userStats.purchaseCount;
+            totalSpent.textContent = formatCurrency(userStats.totalSpent);
+            testimonialCount.textContent = userStats.testimonialCount;
+        }
+
+        // Load user testimonials
+        async function loadUserTestimonials(userId) {
+            if (!db) return;
+            
+            try {
+                const testimonialsRef = db.collection('testimonials').where('userId', '==', userId);
+                const snapshot = await testimonialsRef.orderBy('date', 'desc').get();
+                
+                if (snapshot.empty) {
+                    testimonialsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-comment-slash"></i>
+                            <p>Anda belum menulis testimoni</p>
+                            <p style="margin-top: 10px; font-size: 0.9rem;">
+                                Beli produk dan tulis testimoni untuk membantu pengguna lain
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                testimonialsList.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const testimonial = doc.data();
+                    testimonial.id = doc.id;
+                    
+                    const testimonialItem = createTestimonialItem(testimonial);
+                    testimonialsList.appendChild(testimonialItem);
+                });
+                
+            } catch (error) {
+                console.error('Error loading testimonials:', error);
+            }
+        }
+
+        // Create testimonial item
+        function createTestimonialItem(testimonial) {
+            const div = document.createElement('div');
+            div.className = 'testimonial-item';
+            
+            // Format date
+            const date = testimonial.date?.toDate ? testimonial.date.toDate() : new Date();
+            const dateStr = date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            // Create stars HTML
+            let starsHTML = '';
+            const rating = testimonial.rating || 5;
+            for (let i = 1; i <= 5; i++) {
+                starsHTML += i <= rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+            }
+            
+            div.innerHTML = `
+                <div class="testimonial-header">
+                    <span class="testimonial-product">${testimonial.productName || 'Produk Digital'}</span>
+                    <span style="color: var(--gray); font-size: 0.85rem;">${dateStr}</span>
+                </div>
+                <div class="testimonial-rating">
+                    ${starsHTML}
+                </div>
+                <p class="testimonial-text">"${testimonial.text || ''}"</p>
+                <div class="testimonial-actions">
+                    <button class="btn-edit" data-id="${testimonial.id}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn-delete" data-id="${testimonial.id}">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
+                </div>
+            `;
+            
+            // Add event listeners to buttons
+            div.querySelector('.btn-edit').addEventListener('click', () => {
+                openEditTestimonialModal(testimonial);
+            });
+            
+            div.querySelector('.btn-delete').addEventListener('click', () => {
+                deleteTestimonial(testimonial.id);
+            });
+            
+            return div;
+        }
+
+        // Open edit testimonial modal
+        function openEditTestimonialModal(testimonial) {
+            editTestimonialId.value = testimonial.id;
+            testimonialText.value = testimonial.text || '';
+            setRating(testimonial.rating || 5);
+            editTestimonialModal.style.display = 'flex';
+        }
+
+        // Set rating stars
+        function setRating(rating) {
+            ratingValue.value = rating;
+            
+            const stars = ratingStars.querySelectorAll('i');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.className = 'fas fa-star active';
+                } else {
+                    star.className = 'far fa-star';
+                }
+            });
+        }
+
+        // Update profile
+        async function updateProfile() {
+            if (!auth || !currentUser) return;
+            
+            try {
+                const firstName = firstNameInput.value.trim();
+                const lastName = lastNameInput.value.trim();
+                const email = emailInput.value.trim();
+                const displayName = `${firstName} ${lastName}`;
+                
+                // Validate email
+                if (!validateEmail(email)) {
+                    showError('Format email tidak valid');
+                    return;
+                }
+                
+                // Update display name
+                await currentUser.updateProfile({
+                    displayName: displayName
+                });
+                
+                // Update email if changed
+                if (email !== currentUser.email) {
+                    await currentUser.updateEmail(email);
+                    // Send verification email
+                    await currentUser.sendEmailVerification();
+                }
+                
+                // Update Firestore user document
+                if (db) {
+                    await db.collection('users').doc(currentUser.uid).set({
+                        displayName: displayName,
+                        email: email,
+                        firstName: firstName,
+                        lastName: lastName,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                }
+                
+                // Update UI
+                loadUserData(currentUser);
+                
+                showSuccess('Profil berhasil diperbarui!');
+                
+                // Reload to get updated data
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                handleAuthError(error);
+            }
+        }
+
+        // Update password
+        async function updatePassword() {
+            if (!auth || !currentUser) return;
+            
+            try {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                // Validate
+                if (newPassword.length < 6) {
+                    showError('Password baru minimal 6 karakter');
+                    return;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    showError('Password baru dan konfirmasi tidak sama');
+                    return;
+                }
+                
+                // Re-authenticate user
+                const credential = firebase.auth.EmailAuthProvider.credential(
+                    currentUser.email, 
+                    currentPassword
+                );
+                
+                await currentUser.reauthenticateWithCredential(credential);
+                
+                // Update password
+                await currentUser.updatePassword(newPassword);
+                
+                // Clear form
+                passwordForm.reset();
+                
+                showSuccess('Password berhasil diperbarui!');
+                
+            } catch (error) {
+                console.error('Error updating password:', error);
+                handleAuthError(error);
+            }
+        }
+
+        // Upload avatar
+        async function uploadAvatar(file) {
+            if (!auth || !currentUser || !storage) return;
+            
+            try {
+                // Validate file
+                if (!file.type.startsWith('image/')) {
+                    showError('File harus berupa gambar');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) { // 5MB
+                    showError('Ukuran file maksimal 5MB');
+                    return;
+                }
+                
+                // Create reference
+                const storageRef = storage.ref();
+                const avatarRef = storageRef.child(`avatars/${currentUser.uid}/${Date.now()}_${file.name}`);
+                
+                // Upload file
+                const snapshot = await avatarRef.put(file);
+                const downloadURL = await snapshot.ref.getDownloadURL();
+                
+                // Update user profile
+                await currentUser.updateProfile({
+                    photoURL: downloadURL
+                });
+                
+                // Update Firestore
+                if (db) {
+                    await db.collection('users').doc(currentUser.uid).set({
+                        photoURL: downloadURL,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                }
+                
+                // Update UI
+                avatarImage.src = downloadURL;
+                avatarImage.style.display = 'block';
+                avatarPlaceholder.style.display = 'none';
+                
+                showSuccess('Foto profil berhasil diperbarui!');
+                
+            } catch (error) {
+                console.error('Error uploading avatar:', error);
+                showError('Gagal mengupload foto profil');
+            }
+        }
+
+        // Update testimonial
+        async function updateTestimonial() {
+            if (!db || !currentUser) return;
+            
+            try {
+                const testimonialId = editTestimonialId.value;
+                const text = testimonialText.value.trim();
+                const rating = parseInt(ratingValue.value);
+                
+                if (!text) {
+                    showError('Testimoni tidak boleh kosong');
+                    return;
+                }
+                
+                await db.collection('testimonials').doc(testimonialId).update({
+                    text: text,
+                    rating: rating,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Close modal
+                editTestimonialModal.style.display = 'none';
+                
+                // Reload testimonials
+                loadUserTestimonials(currentUser.uid);
+                loadUserStats(currentUser.uid);
+                
+                showSuccess('Testimoni berhasil diperbarui!');
+                
+            } catch (error) {
+                console.error('Error updating testimonial:', error);
+                showError('Gagal memperbarui testimoni');
+            }
+        }
+
+        // Delete testimonial
+        async function deleteTestimonial(testimonialId) {
+            if (!db) return;
+            
+            if (!confirm('Apakah Anda yakin ingin menghapus testimoni ini?')) {
+                return;
+            }
+            
+            try {
+                await db.collection('testimonials').doc(testimonialId).delete();
+                
+                // Reload testimonials
+                loadUserTestimonials(currentUser.uid);
+                loadUserStats(currentUser.uid);
+                
+                showSuccess('Testimoni berhasil dihapus!');
+                
+            } catch (error) {
+                console.error('Error deleting testimonial:', error);
+                showError('Gagal menghapus testimoni');
+            }
+        }
+
+        // Logout
+        function logout() {
+            if (auth) {
+                auth.signOut().then(() => {
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                }).catch((error) => {
+                    console.error('Logout error:', error);
+                    showError('Gagal logout');
+                });
+            }
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successAlert.style.display = 'flex';
+            errorAlert.style.display = 'none';
+            
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+            }, 5000);
+        }
+
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorAlert.style.display = 'flex';
+            successAlert.style.display = 'none';
+            
+            setTimeout(() => {
+                errorAlert.style.display = 'none';
+            }, 5000);
+        }
+
+        // Handle authentication errors
+        function handleAuthError(error) {
+            console.error('Auth error:', error);
+            
+            let message = 'Terjadi kesalahan';
+            
+            switch (error.code) {
+                case 'auth/requires-recent-login':
+                    message = 'Silakan login ulang untuk melanjutkan';
+                    break;
+                case 'auth/email-already-in-use':
+                    message = 'Email sudah digunakan';
+                    break;
+                case 'auth/invalid-email':
+                    message = 'Format email tidak valid';
+                    break;
+                case 'auth/weak-password':
+                    message = 'Password terlalu lemah';
+                    break;
+                case 'auth/wrong-password':
+                    message = 'Password salah';
+                    break;
+                case 'auth/user-not-found':
+                    message = 'Pengguna tidak ditemukan';
+                    break;
+                case 'auth/network-request-failed':
+                    message = 'Koneksi jaringan bermasalah';
+                    break;
+            }
+            
+            showError(message);
+        }
+
+        // Validate email format
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Export functions
+        window.profileUtils = {
+            updateProfile,
+            updatePassword,
+            uploadAvatar,
+            logout
+        };
+    </script>
+</body>
+</html>
