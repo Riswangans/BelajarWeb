@@ -1,76 +1,120 @@
-// auth-state.js - State management untuk user
-import { auth, onAuthStateChanged } from './firebase-config.js';
-
-// Global user state
-let currentUser = null;
-
-// Subscribe ke perubahan auth state
-onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  
-  // Update UI di semua halaman
-  updateAuthUI(user);
-  
-  // Simpan ke localStorage untuk persistency
-  if (user) {
-    localStorage.setItem('user', JSON.stringify({
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      photoURL: user.photoURL
-    }));
-  } else {
-    localStorage.removeItem('user');
-  }
-  
-  console.log('Auth state changed:', user ? user.email : 'No user');
+// auth-state.js
+document.addEventListener('DOMContentLoaded', async () => {
+    // Check if user is logged in
+    const user = await checkAuthState();
+    
+    if (user) {
+        // User is logged in
+        updateUIForLoggedInUser(user);
+    } else {
+        // User is not logged in
+        updateUIForLoggedOutUser();
+    }
 });
 
-// Fungsi untuk update UI berdasarkan auth state
-function updateAuthUI(user) {
-  const loginBtn = document.getElementById('loginBtn');
-  const registerBtn = document.getElementById('registerBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const userMenu = document.getElementById('userMenu');
-  const userName = document.getElementById('userName');
-  
-  if (user) {
-    // User sudah login
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (registerBtn) registerBtn.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'block';
-    if (userMenu) userMenu.style.display = 'flex';
-    if (userName) userName.textContent = user.displayName || user.email;
-  } else {
-    // User belum login
-    if (loginBtn) loginBtn.style.display = 'block';
-    if (registerBtn) registerBtn.style.display = 'block';
-    if (logoutBtn) logoutBtn.style.display = 'none';
-    if (userMenu) userMenu.style.display = 'none';
-  }
+// Check authentication state
+async function checkAuthState() {
+    try {
+        // Check Firebase auth state
+        return new Promise((resolve) => {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    // Store user data in localStorage
+                    localStorage.setItem('user', JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName,
+                        photoURL: user.photoURL,
+                        emailVerified: user.emailVerified
+                    }));
+                    resolve(user);
+                } else {
+                    localStorage.removeItem('user');
+                    resolve(null);
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Error checking auth state:', error);
+        return null;
+    }
 }
 
-// Fungsi untuk mendapatkan current user
-export function getCurrentUser() {
-  return currentUser || JSON.parse(localStorage.getItem('user'));
-}
-
-// Fungsi untuk logout
-export async function logoutUser() {
-  try {
-    await signOut(auth);
-    window.location.href = '/';
-  } catch (error) {
-    console.error('Logout error:', error);
-  }
-}
-
-// Cek auth state saat pertama load
-export function checkAuthState() {
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe();
-      resolve(user);
+// Update UI for logged in user
+function updateUIForLoggedInUser(user) {
+    // Update navigation
+    const loginLink = document.querySelector('a[href="#login"], a[href="login.html"]');
+    if (loginLink) {
+        loginLink.textContent = user.displayName || user.email;
+        loginLink.href = '#profile';
+        loginLink.innerHTML = `
+            <i class="fas fa-user-circle"></i> 
+            ${user.displayName || user.email.split('@')[0]}
+        `;
+        
+        // Add logout option
+        const logoutItem = document.createElement('li');
+        logoutItem.innerHTML = `
+            <a href="#" id="logoutBtn" style="color: var(--accent);">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        `;
+        
+        const navMenu = document.querySelector('.nav-menu');
+        if (navMenu) {
+            navMenu.appendChild(logoutItem);
+            
+            // Add logout event listener
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                logout();
+            });
+        }
+    }
+    
+    // Show protected content
+    const protectedElements = document.querySelectorAll('.protected');
+    protectedElements.forEach(el => {
+        el.style.display = 'block';
     });
-  });
 }
+
+// Update UI for logged out user
+function updateUIForLoggedOutUser() {
+    // Hide protected content
+    const protectedElements = document.querySelectorAll('.protected');
+    protectedElements.forEach(el => {
+        el.style.display = 'none';
+    });
+}
+
+// Logout function
+function logout() {
+    firebase.auth().signOut().then(() => {
+        localStorage.removeItem('user');
+        window.location.href = 'index.html';
+    }).catch((error) => {
+        console.error('Logout error:', error);
+    });
+}
+
+// Get current user
+function getCurrentUser() {
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
+}
+
+// Check if user is authenticated
+function isAuthenticated() {
+    return getCurrentUser() !== null;
+}
+
+// Export functions
+window.authState = {
+    checkAuthState,
+    getCurrentUser,
+    isAuthenticated,
+    logout,
+    updateUIForLoggedInUser,
+    updateUIForLoggedOutUser
+};
