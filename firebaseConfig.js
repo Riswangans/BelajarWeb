@@ -1,9 +1,4 @@
-// firebase.js atau firebaseConfig.js
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-
+// File terpisah untuk konfigurasi
 const firebaseConfig = {
   apiKey: "AIzaSyDvlHk3jZxZq-eznlBVDZYZEp_-VW2sOKI",
   authDomain: "jual-sc.firebaseapp.com",
@@ -15,11 +10,4 @@ const firebaseConfig = {
   measurementId: "G-RJ3ZRGYYXF"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Export services yang dibutuhkan
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-export default app;
+export { firebaseConfig };
