@@ -1,12 +1,17 @@
-import { auth, db, storage } from './firebaseConfig.js';
+// Inisialisasi Firebase
+let auth, db, storage;
 
-// Initialize Firebase
-let currentUser = null;
-let userTestimonials = [];
-let userPurchases = 0;
-
-// Inisialisasi Firebase sudah diimpor, hapus deklarasi ulang
-// auth, db, dan storage sudah diimpor dari firebaseConfig.js
+try {
+    // Pastikan firebaseConfig didefinisikan di sini atau di firebaseConfig.js yang di-load sebelumnya
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    storage = firebase.storage();
+    console.log("Firebase initialized successfully");
+} catch (error) {
+    console.log("Firebase initialization error:", error);
+    // Fallback to mock data if Firebase fails
+}
 
 // DOM Elements
 const authNavItem = document.getElementById('authNavItem');
