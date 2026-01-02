@@ -976,16 +976,7 @@
     </footer>
 
     <script>
-        // Firebase Configuration
-        // NOTE: You need to replace with your actual Firebase config from firebase-config.js
-        const firebaseConfig = {
-            apiKey: "AIzaSyDEXAMPLE1234567890",
-            authDomain: "your-project.firebaseapp.com",
-            projectId: "your-project-id",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abc123def456"
-        };
+        import { auth, db, storage } from './firebaseConfig';
 
         // Initialize Firebase
         let db;
