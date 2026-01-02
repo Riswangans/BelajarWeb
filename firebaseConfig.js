@@ -10,4 +10,12 @@ const firebaseConfig = {
   measurementId: "G-RJ3ZRGYYXF"
 };
 
-export { firebaseConfig };
+// Inisialisasi Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Export untuk digunakan di file lain
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { auth, db };
+}
