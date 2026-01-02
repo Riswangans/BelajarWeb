@@ -1,14 +1,14 @@
-import { auth, db, storage } from './firebaseConfig.js';
+// script.js - Pastikan bagian ini ada:
+let auth, db, storage;
 
-// Initialize Firebase
-// auth dan db sudah diimpor dari firebaseConfig.js, hapus deklarasi ulang
-        
 try {
-    firebase.initializeApp(firebaseConfig);
-    // Tidak perlu deklarasi ulang karena sudah diimpor
+    firebase.initializeApp(firebaseConfig); // <-- Pastikan firebaseConfig tersedia
+    auth = firebase.auth();
+    db = firebase.firestore();
+    storage = firebase.storage();
     console.log("Firebase initialized successfully");
 } catch (error) {
-    console.error("Firebase initialization error:", error);
+    console.log("Firebase initialization error:", error);
 }
 
 // DOM Elements
