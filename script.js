@@ -1,12 +1,15 @@
-import { firebaseConfig } from './firebaseConfig.js';
+// HAPUS import { auth, db, storage } dari baris ini
+// Tidak perlu import karena kita akan inisialisasi langsung
 
 // Inisialisasi Firebase
 let auth, db, storage;
 
-// Initialize Firebase
 try {
-    // Initialize Firebase
+    // Pastikan firebaseConfig didefinisikan di sini atau di firebaseConfig.js yang di-load sebelumnya
     firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    storage = firebase.storage();
     console.log("Firebase initialized successfully");
 } catch (error) {
     console.log("Firebase initialization error:", error);
@@ -83,33 +86,13 @@ function setupEventListeners() {
         }
     });
 
-    // Close mobile menu when clicking outside - SOLUSI BARU
+    // Close mobile menu when clicking outside
     document.addEventListener('click', (e) => {
-        // SOLUSI: Gunakan mouse event coordinates untuk mengecek posisi klik
-        const clickX = e.clientX;
-        const clickY = e.clientY;
+        const target = e.target;
         
-        // Dapatkan bounding rect dari elemen menu
-        const menuRect = mobileMenu.getBoundingClientRect();
-        const toggleRect = mobileToggle.getBoundingClientRect();
-        
-        // Cek apakah klik berada di dalam area menu atau toggle
-        const isInMenu = (
-            clickX >= menuRect.left &&
-            clickX <= menuRect.right &&
-            clickY >= menuRect.top &&
-            clickY <= menuRect.bottom
-        );
-        
-        const isInToggle = (
-            clickX >= toggleRect.left &&
-            clickX <= toggleRect.right &&
-            clickY >= toggleRect.top &&
-            clickY <= toggleRect.bottom
-        );
-        
-        // Jika klik di luar menu dan toggle, tutup menu
-        if (!isInMenu && !isInToggle && mobileMenu.classList.contains('active')) {
+        // Gunakan @ts-ignore untuk menghindari error TypeScript di editor
+        // @ts-ignore
+        if (!mobileToggle.contains(target) && !mobileMenu.contains(target)) {
             mobileMenu.classList.remove('active');
             const icon = mobileToggle.querySelector('i');
             if (icon) {
