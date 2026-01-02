@@ -1,269 +1,180 @@
-import { db } from './firebase-config.js';
-import { auth } from './firebase-config.js';
-import { storage } from './firebase-config.js';
+// auth.js
+// Logika Autentikasi Firebase
 
-// Firebase Authentication State Listener
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        // User is signed in
-        console.log('User is signed in:', user.email);
-        
-        // Update user last seen
-        if (user.uid) {
-            db.collection('users').doc(user.uid).update({
-                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-            }).catch(console.error);
-        }
-        
-        // Store user data in localStorage
-        const userData = {
-            uid: user.uid,
-            email: user.email,
-            emailVerified: user.emailVerified,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            providerData: user.providerData
-        };
-        
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        
-    } else {
-        // User is signed out
-        console.log('User is signed out');
-        localStorage.removeItem('currentUser');
-    }
-});
+// Import firebaseConfig jika diperlukan
+// const { auth, db } = require('./firebaseConfig.js');
 
-// Helper Functions for Authentication
-
-/**
- * Register new user with email and password
- * @param {string} email - User email
- * @param {string} password - User password
- * @param {Object} userData - Additional user data
- * @returns {Promise} - Promise with user credential
- */
-async function registerUser(email, password, userData = {}) {
-    try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-        
-        // Update user profile if displayName provided
-        if (userData.displayName) {
-            await user.updateProfile({
-                displayName: userData.displayName
-            });
-        }
-        
-        // Create user document in Firestore
-        await db.collection('users').doc(user.uid).set({
-            email: email,
-            displayName: userData.displayName || '',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-            emailVerified: false,
-            role: 'user',
-            status: 'active',
-            ...userData
+// Cek status login
+function checkAuthState() {
+    return new Promise((resolve, reject) => {
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                resolve(user);
+            } else {
+                resolve(null);
+            }
+        }, (error) => {
+            reject(error);
         });
-        
-        // Send email verification
-        await user.sendEmailVerification();
-        
-        return { success: true, user: user };
-        
-    } catch (error) {
-        console.error('Registration error:', error);
-        return { success: false, error: error.message };
-    }
+    });
 }
 
-/**
- * Login user with email and password
- * @param {string} email - User email
- * @param {string} password - User password
- * @returns {Promise} - Promise with user credential
- */
+// Login dengan email dan password
 async function loginUser(email, password) {
     try {
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        const user = userCredential.user;
+        return {
+            success: true,
+            user: userCredential.user
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: getErrorMessage(error.code)
+        };
+    }
+}
+
+// Register dengan email dan password
+async function registerUser(email, password, userData) {
+    try {
+        // Buat user di Firebase Auth
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         
-        // Update last login time
-        await db.collection('users').doc(user.uid).update({
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+        // Simpan data tambahan ke Firestore
+        await db.collection('users').doc(userCredential.user.uid).set({
+            email: email,
+            fullName: userData.fullName,
+            phone: userData.phone || '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         
-        return { success: true, user: user };
-        
+        return {
+            success: true,
+            user: userCredential.user
+        };
     } catch (error) {
-        console.error('Login error:', error);
-        return { success: false, error: error.message };
+        return {
+            success: false,
+            error: getErrorMessage(error.code)
+        };
     }
 }
 
-/**
- * Login with Google
- * @returns {Promise} - Promise with user credential
- */
-async function loginWithGoogle() {
-    try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('profile');
-        provider.addScope('email');
-        
-        const result = await auth.signInWithPopup(provider);
-        const user = result.user;
-        
-        // Check if user exists in Firestore
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        
-        if (!userDoc.exists) {
-            // Create new user document
-            await db.collection('users').doc(user.uid).set({
-                email: user.email,
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-                provider: 'google',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-                emailVerified: user.emailVerified,
-                role: 'user',
-                status: 'active'
-            });
-        } else {
-            // Update last login
-            await db.collection('users').doc(user.uid).update({
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-            });
-        }
-        
-        return { success: true, user: user };
-        
-    } catch (error) {
-        console.error('Google login error:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-/**
- * Logout current user
- * @returns {Promise} - Promise of logout
- */
+// Logout user
 async function logoutUser() {
     try {
         await auth.signOut();
-        localStorage.removeItem('currentUser');
         return { success: true };
     } catch (error) {
-        console.error('Logout error:', error);
-        return { success: false, error: error.message };
+        return {
+            success: false,
+            error: error.message
+        };
     }
 }
 
-/**
- * Send password reset email
- * @param {string} email - User email
- * @returns {Promise} - Promise of reset email sent
- */
-async function sendPasswordResetEmail(email) {
+// Update profile user
+async function updateUserProfile(userId, userData) {
+    try {
+        await db.collection('users').doc(userId).update({
+            ...userData,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        return { success: true };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+// Get user data dari Firestore
+async function getUserData(userId) {
+    try {
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (userDoc.exists) {
+            return {
+                success: true,
+                data: userDoc.data()
+            };
+        } else {
+            return {
+                success: false,
+                error: 'User data not found'
+            };
+        }
+    } catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+// Reset password
+async function resetPassword(email) {
     try {
         await auth.sendPasswordResetEmail(email);
         return { success: true };
     } catch (error) {
-        console.error('Password reset error:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-/**
- * Get current user data
- * @returns {Object|null} - Current user data or null
- */
-function getCurrentUser() {
-    const user = auth.currentUser;
-    if (user) {
         return {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            emailVerified: user.emailVerified,
-            photoURL: user.photoURL
+            success: false,
+            error: getErrorMessage(error.code)
         };
     }
-    return null;
 }
 
-/**
- * Check if user is authenticated
- * @returns {boolean} - True if user is authenticated
- */
-function isAuthenticated() {
-    return auth.currentUser !== null;
-}
-
-/**
- * Get user document from Firestore
- * @param {string} userId - User ID
- * @returns {Promise} - Promise with user document
- */
-async function getUserDocument(userId) {
+// Ubah password
+async function changePassword(newPassword) {
     try {
-        const userDoc = await db.collection('users').doc(userId).get();
-        if (userDoc.exists) {
-            return { success: true, data: userDoc.data() };
-        } else {
-            return { success: false, error: 'User not found' };
-        }
-    } catch (error) {
-        console.error('Get user document error:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-/**
- * Update user profile
- * @param {string} userId - User ID
- * @param {Object} updates - Fields to update
- * @returns {Promise} - Promise of update
- */
-async function updateUserProfile(userId, updates) {
-    try {
-        await db.collection('users').doc(userId).update(updates);
-        
-        // Also update Firebase Auth profile if displayName or photoURL
         const user = auth.currentUser;
-        if (user && user.uid === userId) {
-            const authUpdates = {};
-            if (updates.displayName) authUpdates.displayName = updates.displayName;
-            if (updates.photoURL) authUpdates.photoURL = updates.photoURL;
-            
-            if (Object.keys(authUpdates).length > 0) {
-                await user.updateProfile(authUpdates);
-            }
+        if (user) {
+            await user.updatePassword(newPassword);
+            return { success: true };
+        } else {
+            return {
+                success: false,
+                error: 'No user logged in'
+            };
         }
-        
-        return { success: true };
     } catch (error) {
-        console.error('Update user profile error:', error);
-        return { success: false, error: error.message };
+        return {
+            success: false,
+            error: getErrorMessage(error.code)
+        };
     }
 }
 
-// Export functions and services
-window.firebaseAuth = {
-    auth,
-    db,
-    storage,
-    registerUser,
-    loginUser,
-    loginWithGoogle,
-    logoutUser,
-    sendPasswordResetEmail,
-    getCurrentUser,
-    isAuthenticated,
-    getUserDocument,
-    updateUserProfile
-};
+// Helper: Convert error code ke pesan user-friendly
+function getErrorMessage(errorCode) {
+    const errorMessages = {
+        'auth/invalid-email': 'Email tidak valid',
+        'auth/user-disabled': 'Akun ini dinonaktifkan',
+        'auth/user-not-found': 'Akun tidak ditemukan',
+        'auth/wrong-password': 'Password salah',
+        'auth/email-already-in-use': 'Email sudah digunakan',
+        'auth/operation-not-allowed': 'Operasi tidak diizinkan',
+        'auth/weak-password': 'Password terlalu lemah, minimal 6 karakter',
+        'auth/too-many-requests': 'Terlalu banyak percobaan, coba lagi nanti',
+        'auth/requires-recent-login': 'Silakan login ulang untuk melakukan ini'
+    };
+    
+    return errorMessages[errorCode] || `Error: ${errorCode}`;
+}
 
-console.log('Firebase config loaded successfully');
+// Export functions untuk digunakan di file lain
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        checkAuthState,
+        loginUser,
+        registerUser,
+        logoutUser,
+        updateUserProfile,
+        getUserData,
+        resetPassword,
+        changePassword
+    };
+}
