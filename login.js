@@ -1,13 +1,16 @@
-import { auth, db, storage } from './firebaseConfig.js';
+// Inisialisasi Firebase
+let auth, db, storage;
 
-// Initialize Firebase
-// auth dan db sudah diimpor dari firebaseConfig.js, hapus deklarasi ulang
-        
 try {
+    // Pastikan firebaseConfig didefinisikan di sini atau di firebaseConfig.js yang di-load sebelumnya
     firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    storage = firebase.storage();
     console.log("Firebase initialized successfully");
 } catch (error) {
-    console.error("Firebase initialization error:", error);
+    console.log("Firebase initialization error:", error);
+    // Fallback to mock data if Firebase fails
 }
 
 // DOM Elements
