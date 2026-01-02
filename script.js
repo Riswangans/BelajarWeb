@@ -1,4 +1,7 @@
-import { auth, db, storage } from './firebaseConfig.js';
+import { firebaseConfig } from './firebaseConfig.js';
+
+// Inisialisasi Firebase
+let auth, db, storage;
 
 // Initialize Firebase
 try {
