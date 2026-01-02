@@ -445,16 +445,7 @@
 
     <!-- Firebase Configuration -->
     <script>
-        // Firebase configuration (will be imported from firebase-config.js)
-        // These values should match your firebase-config.js
-        const firebaseConfig = {
-            apiKey: "AIzaSyDEXAMPLE1234567890",
-            authDomain: "your-project.firebaseapp.com",
-            projectId: "your-project-id",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abc123def456"
-        };
+        import { auth, db, storage } from './firebaseConfig';
 
         // Initialize Firebase
         let auth, db;
