@@ -1,8 +1,10 @@
-// script.js - Pastikan bagian ini ada:
+import { firebaseConfig } from './firebaseConfig.js';
+
+// Inisialisasi Firebase
 let auth, db, storage;
 
 try {
-    firebase.initializeApp(firebaseConfig); // <-- Pastikan firebaseConfig tersedia
+    firebase.initializeApp(firebaseConfig);
     auth = firebase.auth();
     db = firebase.firestore();
     storage = firebase.storage();
