@@ -1,9 +1,8 @@
-// firebase-config.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-import { getStorage } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+// firebase.js atau firebaseConfig.js
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDvlHk3jZxZq-eznlBVDZYZEp_-VW2sOKI",
@@ -18,10 +17,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
 
-// Export untuk digunakan di file lain
-export { app, analytics, auth, db, storage };
+// Export services yang dibutuhkan
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
+export default app;
