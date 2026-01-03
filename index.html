@@ -3,46 +3,818 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DigitalShop - Marketplace Produk Digital</title>
+    <title>DigitalStore - Jual Beli Produk Digital</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Reset & Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --gray-dark: #475569;
+            --gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --gradient-dark: linear-gradient(135deg, #4f46e5, #7c3aed);
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-border: rgba(99, 102, 241, 0.3);
+            --shadow-primary: 0 10px 25px rgba(99, 102, 241, 0.2);
+            --shadow-large: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--darker);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Desktop Navigation */
+        .nav-desktop {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-light);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--gradient-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-primary);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--light);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        /* Mobile Navigation */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .nav-mobile {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 300px;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 100px 30px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            overflow-y: auto;
+        }
+
+        .nav-mobile.active {
+            right: 0;
+        }
+
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            display: none;
+        }
+
+        .mobile-overlay.active {
+            display: block;
+        }
+
+        .mobile-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .mobile-auth {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 100px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #fff, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Categories Section */
+        .categories {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient);
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-large);
+            border-color: var(--primary);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .category-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .category-description {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            min-height: 60px;
+        }
+
+        .category-status {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-view {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: var(--gradient);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-view:hover {
+            background: var(--gradient-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-primary);
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            padding: 100px 0;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .testimonials-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .rating-overview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .average-rating {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .rating-stars i {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .total-reviews {
+            color: var(--gray);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid var(--card-border);
+        }
+
+        .testimonial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .user-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .testimonial-rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .testimonial-rating i {
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .testimonial-message {
+            color: var(--light);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .testimonial-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        .testimonial-product {
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+
+        .testimonial-date {
+            color: var(--gray);
+        }
+
+        .view-all-testimonials {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid var(--card-border);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .modal-header h3 {
+            font-size: 2rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .all-testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 3rem 0 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-light);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background: var(--gradient);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Loading States */
+        .loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .nav-desktop {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero-stats {
+                flex-wrap: wrap;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.3rem;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .all-testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .nav-mobile {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
     <header class="header" id="header">
-        <div class="nav-container">
-            <a href="#" class="brand">
-                <div class="brand-logo">
-                    <i class="fas fa-store"></i>
-                </div>
-                <span class="brand-text">DigitalShop</span>
-            </a>
+        <div class="container">
+            <div class="nav-container">
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <span class="logo-text">DigitalStore</span>
+                </a>
 
-            <!-- Desktop Navigation -->
-            <nav class="desktop-nav">
-                <ul class="nav-menu">
-                    <li><a href="#home" class="nav-link">Home</a></li>
-                    <li><a href="#products" class="nav-link">Produk</a></li>
-                    <li><a href="#testimonials" class="nav-link">Testimoni</a></li>
-                    <li><a href="#contact" class="nav-link">Kontak</a></li>
-                    <li id="authNavItem"><a href="login.html" id="authLink" class="btn-login">Login</a></li>
-                </ul>
-            </nav>
+                <!-- Desktop Navigation -->
+                <nav class="nav-desktop">
+                    <ul class="nav-links">
+                        <li><a href="#home" class="nav-link">Home</a></li>
+                        <li><a href="#categories" class="nav-link">Produk</a></li>
+                        <li><a href="#testimonials" class="nav-link">Testimoni</a></li>
+                        <li><a href="#contact" class="nav-link">Kontak</a></li>
+                    </ul>
+                    <div class="auth-buttons" id="auth-buttons-desktop">
+                        <!-- Buttons will be populated by JavaScript -->
+                    </div>
+                </nav>
 
-            <!-- Mobile Menu Toggle -->
-            <button class="mobile-nav-toggle" id="mobile-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
+                <!-- Mobile Toggle -->
+                <button class="mobile-toggle" id="mobile-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
 
-            <!-- Mobile Menu -->
-            <div class="mobile-menu" id="mobile-menu">
-                <ul class="mobile-nav">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#products">Produk</a></li>
-                    <li><a href="#testimonials">Testimoni</a></li>
-                    <li><a href="#contact">Kontak</a></li>
-                    <li id="authNavItem"><a href="login.html" id="authLink" class="btn-login" style="margin-top: 20px; text-align: center;">Login</a></li>
-                </ul>
+                <!-- Mobile Navigation -->
+                <div class="mobile-overlay" id="mobile-overlay"></div>
+                <nav class="nav-mobile" id="nav-mobile">
+                    <ul class="mobile-links">
+                        <li><a href="#home" class="nav-link">Home</a></li>
+                        <li><a href="#categories" class="nav-link">Produk</a></li>
+                        <li><a href="#testimonials" class="nav-link">Testimoni</a></li>
+                        <li><a href="#contact" class="nav-link">Kontak</a></li>
+                    </ul>
+                    <div class="mobile-auth" id="auth-buttons-mobile">
+                        <!-- Buttons will be populated by JavaScript -->
+                    </div>
+                </nav>
             </div>
         </div>
     </header>
@@ -50,83 +822,100 @@
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="container">
-            <div class="hero-content fade-in">
+            <div class="hero-content">
                 <h1>Marketplace Produk Digital Premium</h1>
-                <p>Temukan berbagai produk digital berkualitas untuk kebutuhan bisnis dan kreativitas Anda. Dari script premium, panel hosting, hingga tools marketing terbaik.</p>
-                <a href="#products" class="btn-view-products" style="width: auto; padding: 15px 40px;">
-                    <i class="fas fa-arrow-right"></i> Jelajahi Produk
-                </a>
+                <p>Temukan berbagai produk digital berkualitas untuk kebutuhan online Anda. Mulai dari script premium, panel hosting, hingga tools sosial media yang siap membantu bisnis Anda berkembang.</p>
+                <div class="hero-buttons">
+                    <a href="#categories" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag"></i> Jelajahi Produk
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="total-products">5</span>
+                        <span class="stat-label">Jenis Produk</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="total-testimonials">0</span>
+                        <span class="stat-label">Testimoni</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">4.9</span>
+                        <span class="stat-label">Rating</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Products Section -->
-    <section class="container" id="products">
-        <div class="section-title fade-in">
-            <h2>Kategori Produk</h2>
-            <p>Pilih kategori produk digital yang Anda butuhkan</p>
-        </div>
-
-        <div class="products-grid">
-            <!-- Script -->
-            <div class="product-card fade-in">
-                <div class="product-icon">
-                    <i class="fas fa-code"></i>
-                </div>
-                <h3 class="product-name">Script Premium</h3>
-                <p class="product-description">Koleksi script PHP, JavaScript, Python dengan fitur lengkap dan update berkala. Siap pakai untuk berbagai kebutuhan.</p>
-                <a href="produk/script.html" class="btn-view-products">
-                    <i class="fas fa-eye"></i> Lihat Produk
-                </a>
+    <!-- Categories Section -->
+    <section class="categories" id="categories">
+        <div class="container">
+            <div class="section-title">
+                <h2>Produk Digital Kami</h2>
+                <p>Pilih dari berbagai produk digital berkualitas yang kami tawarkan</p>
             </div>
-
-            <!-- Panel Pterodactyl -->
-            <div class="product-card fade-in">
-                <div class="product-icon">
-                    <i class="fas fa-server"></i>
+            <div class="categories-grid">
+                <!-- Script -->
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="category-name">Script Premium</h3>
+                    <p class="category-description">Koleksi script premium untuk berbagai kebutuhan website, bot, dan aplikasi dengan fitur lengkap.</p>
+                    <button class="btn-view" onclick="viewProducts('script')">
+                        <i class="fas fa-eye"></i> Lihat Script
+                    </button>
                 </div>
-                <h3 class="product-name">Panel Pterodactyl</h3>
-                <p class="product-description">Hosting panel dengan performa optimal. Kelola server game dan aplikasi dengan mudah melalui dashboard modern.</p>
-                <a href="produk/panel.html" class="btn-view-products">
-                    <i class="fas fa-eye"></i> Lihat Produk
-                </a>
-            </div>
 
-            <!-- Nokos (Nomor Kosong) -->
-            <div class="product-card fade-in">
-                <div class="product-icon">
-                    <i class="fas fa-phone"></i>
+                <!-- Panel Pterodactyl -->
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3 class="category-name">Panel Pterodactyl</h3>
+                    <p class="category-description">Panel hosting game dengan performa tinggi dan manajemen server yang mudah.</p>
+                    <button class="btn-view" onclick="viewProducts('panel')">
+                        <i class="fas fa-eye"></i> Lihat Panel
+                    </button>
                 </div>
-                <h3 class="product-name">Nokos (Nomor Kosong)</h3>
-                <p class="product-description">Nomor virtual untuk registrasi dan verifikasi akun. Aman, praktis, dan siap digunakan kapan saja.</p>
-                <a href="produk/nokos.html" class="btn-view-products">
-                    <i class="fas fa-eye"></i> Lihat Produk
-                </a>
-            </div>
 
-            <!-- Suntik Medsos -->
-            <div class="product-card fade-in">
-                <div class="product-icon">
-                    <i class="fas fa-users"></i>
+                <!-- Nokos (Nomor Kosong) -->
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h3 class="category-name">Nokos</h3>
+                    <p class="category-description">Nomor kosong untuk berbagai keperluan verifikasi dan registrasi akun online.</p>
+                    <button class="btn-view" onclick="viewProducts('nokos')">
+                        <i class="fas fa-eye"></i> Lihat Nokos
+                    </button>
                 </div>
-                <h3 class="product-name">Suntik Medsos</h3>
-                <p class="product-description">Tingkatkan engagement media sosial Anda dengan layanan suntik followers, likes, dan views berkualitas.</p>
-                <a href="produk/suntik.html" class="btn-view-products">
-                    <i class="fas fa-eye"></i> Lihat Produk
-                </a>
-            </div>
 
-            <!-- Sewa Bot WhatsApp -->
-            <div class="product-card fade-in">
-                <div class="product-icon">
-                    <i class="fab fa-whatsapp"></i>
+                <!-- Suntik Medsos -->
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="category-name">Suntik Medsos</h3>
+                    <p class="category-description">Layanan peningkatan followers, likes, dan engagement untuk media sosial.</p>
+                    <button class="btn-view" onclick="viewProducts('suntik')">
+                        <i class="fas fa-eye"></i> Lihat Layanan
+                    </button>
                 </div>
-                <h3 class="product-name">Sewa Bot WhatsApp</h3>
-                <span class="coming-soon">Coming Soon</span>
-                <p class="product-description">Bot WhatsApp dengan fitur otomatisasi untuk bisnis. Jadwalkan pesan, auto-reply, dan manajemen kontak.</p>
-                <a href="#" class="btn-view-products" style="background: var(--gray-dark); cursor: not-allowed;">
-                    <i class="fas fa-clock"></i> Segera Hadir
-                </a>
+
+                <!-- Sewa Bot WhatsApp -->
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h3 class="category-name">Sewa Bot WhatsApp</h3>
+                    <p class="category-description">Sewa bot WhatsApp dengan fitur lengkap untuk otomasi bisnis dan customer service.</p>
+                    <span class="category-status">Coming Soon</span>
+                    <button class="btn-view" disabled style="opacity: 0.7; cursor: not-allowed;">
+                        <i class="fas fa-clock"></i> Segera Hadir
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -134,86 +923,72 @@
     <!-- Testimonials Section -->
     <section class="testimonials" id="testimonials">
         <div class="container">
-            <div class="section-title fade-in">
-                <h2>Testimoni Pelanggan</h2>
-                <p>Lihat apa kata pelanggan tentang produk kami</p>
-            </div>
-
-            <div class="testimonial-stats fade-in">
-                <div class="stats-container">
-                    <div class="stat-item">
-                        <span class="stat-value" id="total-testimonials">1</span>
-                        <span class="stat-label">Total Testimoni</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="average-rating">5.0</span>
-                        <span class="stat-label">Rating Rata-rata</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="total-products">1</span>
-                        <span class="stat-label">Produk Terjual</span>
-                    </div>
+            <div class="testimonials-header">
+                <div>
+                    <h2 style="background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        Testimoni Pelanggan
+                    </h2>
+                    <p style="color: var(--gray); margin-top: 0.5rem;">Lihat pengalaman pelanggan yang telah menggunakan produk kami</p>
                 </div>
-
-                <div class="rating-display">
-                    <div class="rating-stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="rating-value" id="rating-value">5.0</div>
-                    <div class="rating-count">(<span id="review-count">1</span> ulasan)</div>
-                </div>
-            </div>
-
-            <div class="testimonial-grid" id="testimonial-grid">
-                <!-- Default testimonial example -->
-                <div class="testimonial-card fade-in">
-                    <div class="testimonial-product product-badge-script">
-                        <i class="fas fa-code"></i> Script Premium
-                    </div>
-                    <div class="testimonial-header">
-                        <div class="testimonial-avatar">JD</div>
-                        <div class="testimonial-info">
-                            <h4>Jordan Developer</h4>
-                            <div class="testimonial-date">15 Maret 2024</div>
+                <div class="rating-overview">
+                    <div class="average-rating" id="average-rating">4.9</div>
+                    <div>
+                        <div class="rating-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
                         </div>
-                    </div>
-                    <div class="testimonial-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="testimonial-text">
-                        "Script PHP yang saya beli sangat berkualitas. Dokumentasi lengkap dan support responsif. 
-                        Fitur-fitur yang disediakan sesuai dengan deskripsi dan membantu mengembangkan proyek e-commerce saya dengan cepat."
-                    </p>
-                    <div class="testimonial-product-name">
-                        <i class="fas fa-shopping-bag"></i> Membeli: <strong>E-Commerce Script Pro</strong>
+                        <div class="total-reviews" id="total-reviews">0 Testimoni</div>
                     </div>
                 </div>
+            </div>
+
+            <div class="testimonials-grid" id="testimonials-grid">
+                <!-- Testimonials will be loaded here -->
+                <div style="text-align: center; grid-column: 1 / -1; padding: 3rem;">
+                    <div class="loading"></div>
+                    <p style="margin-top: 1rem; color: var(--gray);">Memuat testimoni...</p>
+                </div>
+            </div>
+
+            <div class="view-all-testimonials" id="view-all-container" style="display: none;">
+                <button class="btn btn-outline" id="view-all-testimonials">
+                    <i class="fas fa-eye"></i> Lihat Semua Testimoni
+                </button>
             </div>
         </div>
     </section>
+
+    <!-- Modal for All Testimonials -->
+    <div class="modal" id="testimonials-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h3>Semua Testimoni</h3>
+                <p style="color: var(--gray); margin-top: 0.5rem;">Pengalaman lengkap dari pelanggan kami</p>
+            </div>
+            <div class="all-testimonials-grid" id="all-testimonials-grid">
+                <!-- All testimonials will be loaded here -->
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer" id="contact">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
-                    <div class="brand" style="margin-bottom: 20px;">
-                        <div class="brand-logo" style="width: 35px; height: 35px;">
+                    <a href="#" class="logo" style="margin-bottom: 1.5rem; display: inline-block;">
+                        <div class="logo-icon">
                             <i class="fas fa-store"></i>
                         </div>
-                        <span class="brand-text">DigitalShop</span>
-                    </div>
-                    <p style="color: var(--gray); margin-bottom: 20px;">
-                        Marketplace produk digital terpercaya dengan koleksi terlengkap dan kualitas premium.
-                    </p>
+                        <span class="logo-text">DigitalStore</span>
+                    </a>
+                    <p style="color: var(--gray); line-height: 1.7;">Marketplace produk digital terpercaya dengan kualitas premium dan layanan terbaik.</p>
                     <div class="social-links">
                         <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
                         <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
@@ -223,12 +998,13 @@
                 </div>
 
                 <div class="footer-column">
-                    <h4>Kategori</h4>
+                    <h4>Produk</h4>
                     <ul class="footer-links">
-                        <li><a href="produk/script.html">Script Premium</a></li>
-                        <li><a href="produk/panel.html">Panel Pterodactyl</a></li>
-                        <li><a href="produk/nokos.html">Nokos</a></li>
-                        <li><a href="produk/suntik.html">Suntik Medsos</a></li>
+                        <li><a href="#">Script Premium</a></li>
+                        <li><a href="#">Panel Pterodactyl</a></li>
+                        <li><a href="#">Nokos</a></li>
+                        <li><a href="#">Suntik Medsos</a></li>
+                        <li><a href="#">Sewa Bot WhatsApp</a></li>
                     </ul>
                 </div>
 
@@ -236,40 +1012,549 @@
                     <h4>Bantuan</h4>
                     <ul class="footer-links">
                         <li><a href="#">Cara Berbelanja</a></li>
-                        <li><a href="#">Metode Pembayaran</a></li>
                         <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Kontak Support</a></li>
+                        <li><a href="#">Syarat dan Ketentuan</a></li>
+                        <li><a href="#">Kebijakan Privasi</a></li>
+                        <li><a href="#">Hubungi Kami</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
                     <h4>Kontak</h4>
                     <ul class="footer-links">
-                        <li><i class="fas fa-envelope"></i> support@digitalshop.id</li>
-                        <li><i class="fab fa-whatsapp"></i> +62 812-3456-7890</li>
-                        <li><i class="fas fa-clock"></i> 24/7 Support</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Indonesia</li>
+                        <li><i class="fas fa-envelope" style="margin-right: 10px;"></i> support@digitalstore.id</li>
+                        <li><i class="fab fa-whatsapp" style="margin-right: 10px;"></i> +62 812-3456-7890</li>
+                        <li><i class="fas fa-clock" style="margin-right: 10px;"></i> 24/7 Support</li>
                     </ul>
                 </div>
             </div>
 
             <div class="copyright">
-                <p>&copy; 2024 DigitalShop. All rights reserved.</p>
+                <p>&copy; 2024 DigitalStore. All rights reserved.</p>
             </div>
         </div>
     </footer>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-    
-    <!-- Firebase Config (jika ada) -->
-    <script src="firebaseConfig.js"></script>
-    
-    <!-- Script Anda -->
-    <script src="script.js" defer></script>
-    
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDvlHk3jZxZq-eznlBVDZYZEp_-VW2sOKI",
+            authDomain: "jual-sc.firebaseapp.com",
+            databaseURL: "https://jual-sc-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "jual-sc",
+            storageBucket: "jual-sc.firebasestorage.app",
+            messagingSenderId: "1021251795498",
+            appId: "1:1021251795498:web:1b867769b3821ccfa36153",
+            measurementId: "G-RJ3ZRGYYXF"
+        };
+
+        // Initialize Firebase
+        let firebaseApp;
+        let db;
+        let auth;
+        
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            auth = firebase.auth();
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+        }
+
+        // DOM Elements
+        const header = document.getElementById('header');
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const navMobile = document.getElementById('nav-mobile');
+        const authButtonsDesktop = document.getElementById('auth-buttons-desktop');
+        const authButtonsMobile = document.getElementById('auth-buttons-mobile');
+        const testimonialsGrid = document.getElementById('testimonials-grid');
+        const allTestimonialsGrid = document.getElementById('all-testimonials-grid');
+        const averageRating = document.getElementById('average-rating');
+        const totalReviews = document.getElementById('total-reviews');
+        const viewAllContainer = document.getElementById('view-all-container');
+        const viewAllButton = document.getElementById('view-all-testimonials');
+        const testimonialsModal = document.getElementById('testimonials-modal');
+        const modalClose = document.getElementById('modal-close');
+        const totalTestimonialsElement = document.getElementById('total-testimonials');
+
+        // State
+        let lastScrollTop = 0;
+        let allTestimonials = [];
+        let isFirebaseConnected = false;
+
+        // Sample testimonials data untuk fallback
+        const sampleTestimonials = [
+            {
+                id: '1',
+                name: 'Ahmad Rizki',
+                rating: 5,
+                message: 'Script yang dibeli sangat berkualitas, supportnya juga cepat merespon. Recommended banget!',
+                buyproduk: 'Script WhatsApp Bot',
+                KategoriProduk: 'Script',
+                date: new Date('2024-01-15')
+            },
+            {
+                id: '2',
+                name: 'Sari Dewi',
+                rating: 4.5,
+                message: 'Panel Pterodactylnya stabil banget, uptime 99.9% beneran. Server game saya jadi lancar.',
+                buyproduk: 'Panel Pterodactyl 8GB',
+                KategoriProduk: 'Panel',
+                date: new Date('2024-01-10')
+            },
+            {
+                id: '3',
+                name: 'Budi Santoso',
+                rating: 5,
+                message: 'Nokosnya work semua untuk verifikasi akun. Pengiriman cepat dan aman.',
+                buyproduk: 'Paket Nokos 10',
+                KategoriProduk: 'Nokos',
+                date: new Date('2024-01-05')
+            },
+            {
+                id: '4',
+                name: 'Citra Lestari',
+                rating: 4,
+                message: 'Layanan suntik medsosnya membantu bisnis online saya. Followers instagram naik signifikan.',
+                buyproduk: 'Suntik Instagram 1000',
+                KategoriProduk: 'Suntik Medsos',
+                date: new Date('2024-01-01')
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initAuth();
+            setupEventListeners();
+            loadTestimonials();
+            setupScrollHeader();
+            
+            // Set initial testimonials loading state
+            testimonialsGrid.innerHTML = `
+                <div style="text-align: center; grid-column: 1 / -1; padding: 3rem;">
+                    <div class="loading"></div>
+                    <p style="margin-top: 1rem; color: var(--gray);">Memuat testimoni...</p>
+                </div>
+            `;
+        });
+
+        // Auth Functions
+        function initAuth() {
+            if (!auth) {
+                console.log('Firebase Auth not available');
+                updateAuthButtons(null);
+                return;
+            }
+
+            auth.onAuthStateChanged(user => {
+                updateAuthButtons(user);
+            });
+        }
+
+        function updateAuthButtons(user) {
+            const authButtonsHTML = user ? `
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--light); font-size: 0.9rem;">${user.email || 'User'}</span>
+                    <button class="btn btn-outline" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            ` : `
+                <a href="#" class="btn btn-outline" onclick="showLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="#" class="btn btn-primary" onclick="showRegister()">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+            `;
+
+            authButtonsDesktop.innerHTML = authButtonsHTML;
+            authButtonsMobile.innerHTML = authButtonsHTML;
+        }
+
+        function showLogin() {
+            alert('Login page akan dibuat nanti. Silakan lanjutkan untuk membuat halaman login.');
+            closeMobileMenu();
+        }
+
+        function showRegister() {
+            alert('Register page akan dibuat nanti. Silakan lanjutkan untuk membuat halaman register.');
+            closeMobileMenu();
+        }
+
+        async function logout() {
+            if (!auth) {
+                alert('Firebase Auth tidak tersedia');
+                return;
+            }
+            
+            try {
+                await auth.signOut();
+                alert('Logout berhasil!');
+                updateAuthButtons(null);
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Error saat logout: ' + error.message);
+            }
+        }
+
+        // Testimonials Functions
+        async function loadTestimonials() {
+            console.log('Loading testimonials...');
+            
+            // Coba load dari Firebase dulu
+            if (db) {
+                try {
+                    const snapshot = await db.collection('testimonials')
+                        .orderBy('date', 'desc')
+                        .limit(20)
+                        .get();
+                    
+                    console.log('Firebase response:', snapshot);
+                    
+                    allTestimonials = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        console.log('Testimonial data:', data);
+                        allTestimonials.push({
+                            id: doc.id,
+                            ...data
+                        });
+                    });
+
+                    isFirebaseConnected = true;
+                    console.log('Loaded from Firebase:', allTestimonials.length, 'testimonials');
+                    
+                } catch (error) {
+                    console.error('Firebase Error:', error);
+                    console.error('Error details:', error.code, error.message);
+                    isFirebaseConnected = false;
+                    
+                    // Fallback ke data sample jika Firebase error
+                    console.log('Using sample testimonials due to Firebase error');
+                    allTestimonials = sampleTestimonials;
+                }
+            } else {
+                console.log('Firebase Firestore not available, using sample data');
+                allTestimonials = sampleTestimonials;
+                isFirebaseConnected = false;
+            }
+
+            // Display testimonials
+            displayTestimonials();
+            updateTestimonialsStats();
+            
+            // Show connection status
+            if (!isFirebaseConnected) {
+                showConnectionWarning();
+            }
+        }
+
+        function showConnectionWarning() {
+            const warning = document.createElement('div');
+            warning.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(245, 158, 11, 0.9);
+                color: white;
+                padding: 10px 15px;
+                border-radius: 8px;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 0.9rem;
+            `;
+            
+            warning.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Menggunakan data sample. Pastikan Firebase terkoneksi.</span>
+            `;
+            
+            document.body.appendChild(warning);
+            
+            // Remove warning after 5 seconds
+            setTimeout(() => {
+                warning.style.opacity = '0';
+                warning.style.transition = 'opacity 0.5s';
+                setTimeout(() => warning.remove(), 500);
+            }, 5000);
+        }
+
+        function displayTestimonials() {
+            if (allTestimonials.length === 0) {
+                testimonialsGrid.innerHTML = `
+                    <div style="text-align: center; grid-column: 1 / -1; padding: 3rem; color: var(--gray);">
+                        <i class="fas fa-comment" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <p>Belum ada testimoni. Jadilah yang pertama!</p>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;">
+                            ${isFirebaseConnected ? 'Firebase terkoneksi' : 'Menggunakan data sample'}
+                        </p>
+                    </div>
+                `;
+                viewAllContainer.style.display = 'none';
+                return;
+            }
+
+            const limitedTestimonials = allTestimonials.slice(0, 4);
+            testimonialsGrid.innerHTML = '';
+
+            limitedTestimonials.forEach(testimonial => {
+                const card = createTestimonialCard(testimonial);
+                testimonialsGrid.appendChild(card);
+            });
+
+            if (allTestimonials.length > 4) {
+                viewAllContainer.style.display = 'block';
+            } else {
+                viewAllContainer.style.display = 'none';
+            }
+        }
+
+        function displayAllTestimonials() {
+            allTestimonialsGrid.innerHTML = '';
+            allTestimonials.forEach(testimonial => {
+                const card = createTestimonialCard(testimonial);
+                allTestimonialsGrid.appendChild(card);
+            });
+        }
+
+        function createTestimonialCard(testimonial) {
+            const card = document.createElement('div');
+            card.className = 'testimonial-card';
+            
+            // Handle date (bisa dari Firebase Timestamp atau Date object)
+            let date;
+            if (testimonial.date && testimonial.date.toDate) {
+                // Jika dari Firebase Timestamp
+                date = testimonial.date.toDate();
+            } else if (testimonial.date instanceof Date) {
+                // Jika sudah Date object
+                date = testimonial.date;
+            } else {
+                // Default ke sekarang
+                date = new Date();
+            }
+            
+            const formattedDate = date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            // Get initials from name
+            const name = testimonial.name || 'Anonymous';
+            const initials = name.charAt(0).toUpperCase();
+            
+            // Create stars based on rating
+            const rating = testimonial.rating || 0;
+            let starsHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(rating)) {
+                    starsHTML += '<i class="fas fa-star"></i>';
+                } else if (i - 0.5 <= rating) {
+                    starsHTML += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    starsHTML += '<i class="far fa-star"></i>';
+                }
+            }
+
+            card.innerHTML = `
+                <div class="testimonial-header">
+                    <div class="testimonial-user">
+                        <div class="user-avatar">${initials}</div>
+                        <div class="user-info">
+                            <h4>${name}</h4>
+                            <p>${testimonial.KategoriProduk || 'Produk Digital'}</p>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        ${starsHTML}
+                    </div>
+                </div>
+                <div class="testimonial-message">
+                    ${testimonial.message || 'Tidak ada pesan'}
+                </div>
+                <div class="testimonial-footer">
+                    <span class="testimonial-product">${testimonial.buyproduk || 'Produk Digital'}</span>
+                    <span class="testimonial-date">${formattedDate}</span>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function updateTestimonialsStats() {
+            if (allTestimonials.length === 0) {
+                averageRating.textContent = '0.0';
+                totalReviews.textContent = '0 Testimoni';
+                totalTestimonialsElement.textContent = '0';
+                return;
+            }
+
+            const total = allTestimonials.length;
+            const avgRating = allTestimonials.reduce((sum, t) => sum + (t.rating || 0), 0) / total;
+            
+            averageRating.textContent = avgRating.toFixed(1);
+            totalReviews.textContent = `${total} Testimoni`;
+            totalTestimonialsElement.textContent = total;
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Mobile menu toggle
+            mobileToggle.addEventListener('click', toggleMobileMenu);
+            mobileOverlay.addEventListener('click', closeMobileMenu);
+            
+            // Close mobile menu on link click
+            document.querySelectorAll('.nav-mobile .nav-link').forEach(link => {
+                link.addEventListener('click', closeMobileMenu);
+            });
+
+            // View all testimonials
+            viewAllButton.addEventListener('click', () => {
+                displayAllTestimonials();
+                testimonialsModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+
+            // Close modal
+            modalClose.addEventListener('click', closeModal);
+            testimonialsModal.addEventListener('click', (e) => {
+                if (e.target === testimonialsModal) {
+                    closeModal();
+                }
+            });
+
+            // Smooth scroll
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        window.scrollTo({
+                            top: target.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Retry loading testimonials
+            const retryButton = document.createElement('button');
+            retryButton.textContent = 'Refresh Testimoni';
+            retryButton.className = 'btn btn-outline';
+            retryButton.style.marginTop = '1rem';
+            retryButton.onclick = () => {
+                testimonialsGrid.innerHTML = `
+                    <div style="text-align: center; grid-column: 1 / -1; padding: 3rem;">
+                        <div class="loading"></div>
+                        <p style="margin-top: 1rem; color: var(--gray);">Memuat testimoni...</p>
+                    </div>
+                `;
+                loadTestimonials();
+            };
+            
+            // Add retry button to error message if needed
+            window.showTestimonialError = function() {
+                testimonialsGrid.innerHTML = `
+                    <div style="text-align: center; grid-column: 1 / -1; padding: 3rem; color: var(--gray);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <p>Gagal memuat testimoni.</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Periksa koneksi Firebase Anda</p>
+                    </div>
+                `;
+            };
+        }
+
+        function toggleMobileMenu() {
+            const isActive = navMobile.classList.contains('active');
+            
+            if (isActive) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+
+        function openMobileMenu() {
+            navMobile.classList.add('active');
+            mobileOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            mobileToggle.innerHTML = '<i class="fas fa-times"></i>';
+        }
+
+        function closeMobileMenu() {
+            navMobile.classList.remove('active');
+            mobileOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        }
+
+        function closeModal() {
+            testimonialsModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // View products function
+        function viewProducts(category) {
+            alert(`Halaman produk untuk kategori "${category}" akan dibuat nanti.\n\nSilakan lanjutkan untuk membuat halaman produk.`);
+        }
+
+        // Scroll header effect
+        function setupScrollHeader() {
+            let ticking = false;
+            
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                        
+                        if (scrollTop > lastScrollTop && scrollTop > 100) {
+                            // Scroll down
+                            header.classList.add('hidden');
+                        } else {
+                            // Scroll up
+                            header.classList.remove('hidden');
+                        }
+                        
+                        lastScrollTop = scrollTop;
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+        }
+
+        // Debug Firebase connection
+        function checkFirebaseConnection() {
+            if (!firebaseApp) {
+                console.error('Firebase tidak terinisialisasi');
+                return false;
+            }
+            
+            console.log('Firebase App:', firebaseApp.name);
+            console.log('Firestore available:', !!db);
+            console.log('Auth available:', !!auth);
+            
+            return true;
+        }
+
+        // Check Firebase connection on load
+        setTimeout(() => {
+            const isConnected = checkFirebaseConnection();
+            console.log('Firebase Connected:', isConnected);
+            
+            if (!isConnected) {
+                showConnectionWarning();
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
