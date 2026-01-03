@@ -761,9 +761,31 @@
         body.no-scroll {
             overflow: hidden;
         }
+
+        /* Debug Info */
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-family: monospace;
+            z-index: 10000;
+            display: none;
+        }
+
+        .debug-info.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <!-- Debug Info -->
+    <div class="debug-info" id="debugInfo"></div>
+
     <!-- Header -->
     <header id="header">
         <div class="container">
@@ -889,17 +911,8 @@
         <div class="container">
             <div class="testimonials-header">
                 <div class="rating-overview" id="ratingOverview">
-                    <div class="rating-number">4.9</div>
-                    <div>
-                        <div class="rating-stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <div class="testimonial-count" id="testimonialCount">Loading testimoni...</div>
-                    </div>
+                    <div class="loading-spinner" style="border-top-color: var(--primary);"></div>
+                    <div>Memuat rating...</div>
                 </div>
                 
                 <button class="btn btn-view-all" id="viewAllTestimonials">Lihat Semua Testimoni</button>
@@ -995,9 +1008,24 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // Enable debug mode
+        const DEBUG_MODE = true;
+
+        // Debug logging function
+        function debugLog(message, data = null) {
+            if (DEBUG_MODE) {
+                console.log(`[DEBUG] ${message}`, data || '');
+                
+                // Update debug info display
+                const debugInfo = document.getElementById('debugInfo');
+                debugInfo.classList.add('active');
+                debugInfo.innerHTML = `Firebase: ${message}<br>${data ? JSON.stringify(data).substring(0, 100) + '...' : ''}`;
+            }
+        }
 
         // DOM Elements
         const header = document.getElementById('header');
@@ -1012,25 +1040,58 @@
         const closeModal = document.getElementById('closeModal');
         const viewAllTestimonials = document.getElementById('viewAllTestimonials');
         const ratingOverview = document.getElementById('ratingOverview');
-        const testimonialCount = document.getElementById('testimonialCount');
 
         // Current User State
         let currentUser = null;
+        let allTestimonials = [];
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            debugLog('Initializing app...');
             initializeApp();
             setupEventListeners();
             loadTestimonials();
             setupScrollHeader();
+            
+            // Test Firebase connection
+            testFirebaseConnection();
         });
+
+        // Test Firebase Connection
+        async function testFirebaseConnection() {
+            try {
+                debugLog('Testing Firebase connection...');
+                
+                // Test if Firebase is initialized
+                if (!firebase.apps.length) {
+                    debugLog('Firebase not initialized');
+                    return;
+                }
+                
+                debugLog('Firebase app initialized:', app.name);
+                
+                // Test Firestore connection by trying to read a document
+                const testDoc = await db.collection('testimonials').limit(1).get();
+                debugLog('Firestore connection test:', testDoc.empty ? 'Collection exists but empty' : 'Connected successfully');
+                
+            } catch (error) {
+                debugLog('Firebase connection error:', error.message);
+                debugLog('Error code:', error.code);
+                debugLog('Full error:', error);
+            }
+        }
 
         // Initialize App
         function initializeApp() {
+            debugLog('Setting up auth state observer...');
+            
             // Auth state observer
             auth.onAuthStateChanged((user) => {
                 currentUser = user;
+                debugLog('Auth state changed:', user ? `User logged in: ${user.email}` : 'No user logged in');
                 updateAuthButtons();
+            }, (error) => {
+                debugLog('Auth state observer error:', error.message);
             });
 
             // Disable body scroll when mobile menu is open
@@ -1051,11 +1112,13 @@
 
         // Update Auth Buttons
         function updateAuthButtons() {
+            debugLog('Updating auth buttons...');
+            
             if (currentUser) {
                 // User is logged in - show logout button
                 authButtonsDesktop.innerHTML = `
                     <span style="color: var(--primary); margin-right: 10px;">
-                        <i class="fas fa-user-circle"></i> ${currentUser.email}
+                        <i class="fas fa-user-circle"></i> ${currentUser.email || 'User'}
                     </span>
                     <button class="btn btn-logout" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i> Logout
@@ -1064,7 +1127,7 @@
 
                 authButtonsMobile.innerHTML = `
                     <span style="color: var(--primary); text-align: center; padding: 15px;">
-                        <i class="fas fa-user-circle"></i> ${currentUser.email}
+                        <i class="fas fa-user-circle"></i> ${currentUser.email || 'User'}
                     </span>
                     <button class="btn btn-logout" onclick="logout(); closeMobileMenu()">
                         <i class="fas fa-sign-out-alt"></i> Logout
@@ -1095,38 +1158,68 @@
         // Login Function
         function login() {
             alert('Login page akan dibuat nanti. Lanjutkan untuk membuat halaman login.');
-            // Will be implemented when you say "lanjut"
+            debugLog('Login button clicked');
         }
 
         // Register Function
         function register() {
             alert('Register page akan dibuat nanti. Lanjutkan untuk membuat halaman register.');
-            // Will be implemented when you say "lanjut"
+            debugLog('Register button clicked');
         }
 
         // Logout Function
         function logout() {
+            debugLog('Attempting logout...');
             auth.signOut().then(() => {
+                debugLog('Logout successful');
                 alert('Logout berhasil!');
             }).catch((error) => {
-                console.error('Logout error:', error);
+                debugLog('Logout error:', error.message);
+                alert('Logout gagal: ' + error.message);
             });
         }
 
-        // Load Testimonials from Firestore
+        // Load Testimonials from Firestore with improved error handling
         async function loadTestimonials() {
+            debugLog('Loading testimonials from Firestore...');
+            
             try {
-                const snapshot = await db.collection('testimonials')
+                // Show loading state
+                testimonialsGrid.innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        Memuat testimoni...
+                    </div>
+                `;
+
+                // Try to get testimonials with timeout
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Timeout: Firestore tidak merespon')), 10000)
+                );
+
+                const testimonialsPromise = db.collection('testimonials')
                     .orderBy('date', 'desc')
                     .get();
 
+                const snapshot = await Promise.race([testimonialsPromise, timeoutPromise]);
+                
+                debugLog('Firestore response received:', {
+                    empty: snapshot.empty,
+                    size: snapshot.size,
+                    docs: snapshot.docs.length
+                });
+
                 if (snapshot.empty) {
+                    debugLog('Testimonials collection is empty');
                     testimonialsGrid.innerHTML = `
                         <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
                             <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
                             <p>Belum ada testimoni. Jadilah yang pertama memberikan testimoni!</p>
                         </div>
                     `;
+                    
+                    // Show mock data for testing
+                    showMockTestimonials();
                     return;
                 }
 
@@ -1134,47 +1227,148 @@
                 let totalRating = 0;
 
                 snapshot.forEach(doc => {
-                    const data = doc.data();
-                    testimonials.push({
-                        id: doc.id,
-                        ...data
-                    });
-                    totalRating += data.rating || 0;
+                    try {
+                        const data = doc.data();
+                        debugLog(`Processing testimonial ${doc.id}:`, {
+                            name: data.name,
+                            rating: data.rating,
+                            hasDate: !!data.date
+                        });
+                        
+                        testimonials.push({
+                            id: doc.id,
+                            ...data
+                        });
+                        
+                        if (data.rating) {
+                            totalRating += Number(data.rating);
+                        }
+                    } catch (docError) {
+                        debugLog(`Error processing document ${doc.id}:`, docError.message);
+                    }
                 });
 
+                debugLog(`Processed ${testimonials.length} testimonials`, {
+                    totalRating,
+                    averageRating: testimonials.length > 0 ? (totalRating / testimonials.length).toFixed(1) : 0
+                });
+
+                // Store all testimonials
+                allTestimonials = testimonials;
+
                 // Update rating overview
-                const averageRating = (totalRating / testimonials.length).toFixed(1);
-                ratingOverview.innerHTML = `
-                    <div class="rating-number">${averageRating}</div>
-                    <div>
-                        <div class="rating-stars">
-                            ${generateStars(averageRating)}
-                        </div>
-                        <div class="testimonial-count">${testimonials.length} Testimoni</div>
-                    </div>
-                `;
+                updateRatingOverview(testimonials, totalRating);
 
                 // Display first 4 testimonials
                 displayTestimonials(testimonials.slice(0, 4), testimonialsGrid);
 
-                // Store all testimonials for modal
-                window.allTestimonials = testimonials;
-
             } catch (error) {
-                console.error('Error loading testimonials:', error);
+                debugLog('Error loading testimonials:', {
+                    message: error.message,
+                    code: error.code,
+                    name: error.name
+                });
+                
+                // Show user-friendly error message
                 testimonialsGrid.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--accent);">
                         <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 20px;"></i>
-                        <p>Gagal memuat testimoni. Silakan coba lagi nanti.</p>
+                        <p>Gagal memuat testimoni: ${error.message}</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px; color: var(--gray);">
+                            Pastikan Firestore rules mengizinkan read access
+                        </p>
                     </div>
                 `;
+                
+                // Show mock data for testing
+                showMockTestimonials();
             }
+        }
+
+        // Show mock testimonials for testing
+        function showMockTestimonials() {
+            debugLog('Showing mock testimonials for testing...');
+            
+            const mockTestimonials = [{
+                name: "Jordan",
+                rating: 5,
+                message: "Produk scriptnya bagus banget, works 100%!",
+                buyproduk: "Script WhatsApp Bot Premium",
+                KategoriProduk: "Script",
+                date: new Date()
+            }, {
+                name: "Alex",
+                rating: 4,
+                message: "Panel pterodactylnya stabil, support responsif.",
+                buyproduk: "Panel Pterodactyl 8GB",
+                KategoriProduk: "Panel",
+                date: new Date(Date.now() - 86400000) // Yesterday
+            }];
+
+            allTestimonials = mockTestimonials;
+            
+            // Update rating overview with mock data
+            const totalRating = mockTestimonials.reduce((sum, t) => sum + (t.rating || 0), 0);
+            updateRatingOverview(mockTestimonials, totalRating);
+            
+            // Display mock testimonials
+            displayTestimonials(mockTestimonials.slice(0, 2), testimonialsGrid);
+            
+            // Show warning about mock data
+            const warning = document.createElement('div');
+            warning.style.cssText = `
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 20px;
+                background: rgba(245, 158, 11, 0.1);
+                border: 1px solid var(--accent);
+                border-radius: 10px;
+                margin-top: 20px;
+                color: var(--accent);
+            `;
+            warning.innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                <p>Menampilkan data contoh. Pastikan Firestore sudah diatur dengan benar.</p>
+            `;
+            testimonialsGrid.appendChild(warning);
+        }
+
+        // Update rating overview
+        function updateRatingOverview(testimonials, totalRating) {
+            if (testimonials.length === 0) {
+                ratingOverview.innerHTML = `
+                    <div class="rating-number">0.0</div>
+                    <div>
+                        <div class="rating-stars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <div class="testimonial-count">0 Testimoni</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const averageRating = (totalRating / testimonials.length).toFixed(1);
+            ratingOverview.innerHTML = `
+                <div class="rating-number">${averageRating}</div>
+                <div>
+                    <div class="rating-stars">
+                        ${generateStars(averageRating)}
+                    </div>
+                    <div class="testimonial-count">${testimonials.length} Testimoni</div>
+                </div>
+            `;
         }
 
         // Generate stars HTML
         function generateStars(rating) {
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 >= 0.5;
+            const numRating = parseFloat(rating);
+            const fullStars = Math.floor(numRating);
+            const hasHalfStar = (numRating % 1) >= 0.5;
             let starsHTML = '';
 
             for (let i = 0; i < 5; i++) {
@@ -1192,7 +1386,9 @@
 
         // Display testimonials in a container
         function displayTestimonials(testimonials, container) {
-            if (testimonials.length === 0) {
+            debugLog(`Displaying ${testimonials.length} testimonials`);
+            
+            if (!testimonials || testimonials.length === 0) {
                 container.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
                         Tidak ada testimoni yang ditampilkan.
@@ -1201,28 +1397,35 @@
                 return;
             }
 
-            container.innerHTML = testimonials.map(testimonial => `
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <div class="testimonial-user">
-                            <div class="testimonial-name">${testimonial.name || 'Anonymous'}</div>
-                            <div class="testimonial-rating">
-                                ${generateStars(testimonial.rating || 0)}
+            container.innerHTML = testimonials.map((testimonial, index) => {
+                try {
+                    return `
+                        <div class="testimonial-card">
+                            <div class="testimonial-header">
+                                <div class="testimonial-user">
+                                    <div class="testimonial-name">${testimonial.name || 'Anonymous'}</div>
+                                    <div class="testimonial-rating">
+                                        ${generateStars(testimonial.rating || 0)}
+                                    </div>
+                                    <div class="testimonial-category">${testimonial.KategoriProduk || 'Umum'}</div>
+                                </div>
                             </div>
-                            <div class="testimonial-category">${testimonial.KategoriProduk || 'Umum'}</div>
+                            <div class="testimonial-message">
+                                "${testimonial.message || 'Tidak ada pesan'}"
+                            </div>
+                            <div class="testimonial-product">
+                                <i class="fas fa-shopping-bag"></i> ${testimonial.buyproduk || 'Produk tidak diketahui'}
+                            </div>
+                            <div class="testimonial-date">
+                                ${formatDate(testimonial.date)}
+                            </div>
                         </div>
-                    </div>
-                    <div class="testimonial-message">
-                        "${testimonial.message || 'Tidak ada pesan'}"
-                    </div>
-                    <div class="testimonial-product">
-                        <i class="fas fa-shopping-bag"></i> ${testimonial.buyproduk || 'Produk tidak diketahui'}
-                    </div>
-                    <div class="testimonial-date">
-                        ${formatDate(testimonial.date)}
-                    </div>
-                </div>
-            `).join('');
+                    `;
+                } catch (error) {
+                    debugLog(`Error rendering testimonial ${index}:`, error.message);
+                    return '';
+                }
+            }).join('');
         }
 
         // Format date from Firestore timestamp
@@ -1230,19 +1433,47 @@
             if (!timestamp) return 'Tanggal tidak diketahui';
             
             try {
-                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                let date;
+                
+                if (timestamp.toDate) {
+                    // Firestore Timestamp
+                    date = timestamp.toDate();
+                } else if (timestamp.seconds) {
+                    // Firestore Timestamp from REST API
+                    date = new Date(timestamp.seconds * 1000);
+                } else if (timestamp instanceof Date) {
+                    // JavaScript Date object
+                    date = timestamp;
+                } else if (typeof timestamp === 'string') {
+                    // ISO string
+                    date = new Date(timestamp);
+                } else if (typeof timestamp === 'number') {
+                    // Unix timestamp
+                    date = new Date(timestamp);
+                } else {
+                    return 'Format tanggal tidak dikenali';
+                }
+                
+                // Check if date is valid
+                if (isNaN(date.getTime())) {
+                    return 'Tanggal tidak valid';
+                }
+                
                 return date.toLocaleDateString('id-ID', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric'
                 });
             } catch (error) {
-                return 'Tanggal tidak valid';
+                debugLog('Date formatting error:', error.message);
+                return 'Error format tanggal';
             }
         }
 
         // View Products by Category
         function viewProducts(category) {
+            debugLog(`View products for category: ${category}`);
+            
             if (category === 'bot-wa') {
                 alert('Fitur Sewa Bot WhatsApp akan segera hadir!');
                 return;
@@ -1260,35 +1491,48 @@
 
         // Setup Event Listeners
         function setupEventListeners() {
+            debugLog('Setting up event listeners...');
+            
             // Mobile Menu
             menuToggle.addEventListener('click', () => {
+                debugLog('Mobile menu opened');
                 mobileOverlay.classList.add('active');
             });
 
-            closeMenu.addEventListener('click', closeMobileMenu);
+            closeMenu.addEventListener('click', () => {
+                debugLog('Mobile menu closed');
+                closeMobileMenu();
+            });
 
             // Close mobile menu when clicking on overlay
             mobileOverlay.addEventListener('click', (e) => {
                 if (e.target === mobileOverlay) {
+                    debugLog('Mobile menu closed via overlay click');
                     closeMobileMenu();
                 }
             });
 
             // Testimonials Modal
             viewAllTestimonials.addEventListener('click', () => {
-                if (window.allTestimonials && window.allTestimonials.length > 0) {
-                    displayTestimonials(window.allTestimonials, modalTestimonials);
+                debugLog('View all testimonials clicked');
+                if (allTestimonials && allTestimonials.length > 0) {
+                    displayTestimonials(allTestimonials, modalTestimonials);
                     testimonialsModal.classList.add('active');
+                } else {
+                    debugLog('No testimonials to show');
+                    alert('Belum ada testimoni yang tersedia.');
                 }
             });
 
             closeModal.addEventListener('click', () => {
+                debugLog('Testimonials modal closed');
                 testimonialsModal.classList.remove('active');
             });
 
             // Close modal when clicking outside
             testimonialsModal.addEventListener('click', (e) => {
                 if (e.target === testimonialsModal) {
+                    debugLog('Testimonials modal closed via overlay click');
                     testimonialsModal.classList.remove('active');
                 }
             });
@@ -1296,6 +1540,7 @@
             // Close modal with Escape key
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && testimonialsModal.classList.contains('active')) {
+                    debugLog('Testimonials modal closed via Escape key');
                     testimonialsModal.classList.remove('active');
                 }
             });
@@ -1309,9 +1554,13 @@
         // Header Scroll Behavior
         function setupScrollHeader() {
             let lastScrollTop = 0;
+            let scrollTimeout;
             
             window.addEventListener('scroll', () => {
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // Clear previous timeout
+                clearTimeout(scrollTimeout);
                 
                 if (scrollTop > lastScrollTop && scrollTop > 100) {
                     // Scroll down - hide header
@@ -1322,6 +1571,11 @@
                 }
                 
                 lastScrollTop = scrollTop;
+                
+                // Set timeout to show header when scrolling stops
+                scrollTimeout = setTimeout(() => {
+                    header.classList.remove('hidden');
+                }, 1500);
             });
         }
     </script>
